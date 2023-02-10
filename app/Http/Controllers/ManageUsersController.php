@@ -19,7 +19,8 @@ class ManageUsersController extends Controller
         if ($request->user()->cannot('viewAny', User::class)) {
             abort(404);
         }
-        return Inertia::render('Users', ['users' => User::all()->toArray()]);
+        $users = User::whereIn('role', ['superadmin', 'admin'])->get()->toArray();
+        return Inertia::render('Users', ['users' => $users]);
     }
 
     /**
