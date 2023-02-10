@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Inertia\Response;
 use Inertia\Inertia;
+use Illuminate\Validation\Rules;
 
 class ManageUsersController extends Controller
 {
@@ -19,30 +22,48 @@ class ManageUsersController extends Controller
         if ($request->user()->cannot('viewAny', User::class)) {
             abort(404);
         }
-        $users = User::whereIn('role', ['superadmin', 'admin'])->get()->toArray();
+        $users = User::whereIn('role', ['superadmin', 'admin'])->latest()->get()->toArray();
         return Inertia::render('Users', ['users' => $users]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        //
+        if ($request->user()->cannot('create', User::class)) {
+            abort(403);
+        }
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:' . User::class,
+            'username' => 'required|string|max:15|unique:' . User::class,
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'role' => ['required', 'string', Rule::in(User::$roles)],
+        ]);
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'role' => $request->role,
+        ]);
+
+        return to_route('users.index', ['users' => [$user]]);
     }
+
+    // /**
+    //  * Store a newly created resource in storage.
+    //  *
+    //  * @param  \Illuminate\Http\Request  $request
+    //  * @return \Illuminate\Http\Response
+    //  */
+    // public function store(Request $request)
+    // {
+    //     //
+    // }
 
     /**
      * Display the specified resource.

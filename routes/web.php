@@ -18,6 +18,7 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
+    return redirect('/users');
     return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
@@ -32,7 +33,9 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/users/manage', [ManageUsersController::class, 'index'])->middleware(['auth', 'verified'])->name('manageUsers');
+Route::get('/users', [ManageUsersController::class, 'index'])->middleware(['auth', 'verified'])->name('users.index');
+Route::post('/users/store', [ManageUsersController::class, 'store'])->middleware(['auth', 'verified'])->name('users.store');
+Route::put('/users/update', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

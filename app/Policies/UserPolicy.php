@@ -32,7 +32,7 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->isSuperAdmin() || $user->isAdmin();
+        return $user->isAdmin();
     }
 
     /**
@@ -44,7 +44,7 @@ class UserPolicy
      */
     public function view(User $user, User $model)
     {
-        if ($user->id === $model->id);
+        //   
     }
 
     /**
@@ -55,7 +55,7 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        // return 
+        return $user->isAdmin();
     }
 
     /**

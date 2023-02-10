@@ -4,17 +4,20 @@ import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
+import SelectInput from "@/Components/SelectInput.vue";
 const form = useForm({
     name: "",
     email: "",
+    username: "",
     password: "",
     password_confirmation: "",
-    terms: false,
+    role: "admin",
 });
 
 const submit = () => {
-    form.post(route("register"), {
-        onFinish: () => form.reset("password", "password_confirmation"),
+    form.post(route("users.store"), {
+        onSuccess: () => form.reset(),
+        only: ["users"],
     });
 };
 </script>
@@ -43,6 +46,39 @@ const submit = () => {
                     </div>
 
                     <div class="mt-4">
+                        <InputLabel for="username" value="Username" />
+
+                        <TextInput
+                            id="username"
+                            type="text"
+                            class="mt-1 block w-full"
+                            v-model="form.username"
+                            required
+                            autocomplete="username"
+                        />
+
+                        <InputError
+                            class="mt-2"
+                            :message="form.errors.username"
+                        />
+                    </div>
+                    <div class="mt-4">
+                        <InputLabel for="role" value="Role" />
+
+                        <SelectInput
+                            id="role"
+                            class="mt-1 block w-full"
+                            v-model="form.role"
+                            required
+                            autocomplete="role"
+                        >
+                            <option selected>admin</option>
+                            <option>superadmin</option>
+                        </SelectInput>
+
+                        <InputError class="mt-2" :message="form.errors.role" />
+                    </div>
+                    <div class="mt-4">
                         <InputLabel for="email" value="Email" />
 
                         <TextInput
@@ -51,12 +87,11 @@ const submit = () => {
                             class="mt-1 block w-full"
                             v-model="form.email"
                             required
-                            autocomplete="username"
+                            autocomplete="email"
                         />
 
                         <InputError class="mt-2" :message="form.errors.email" />
                     </div>
-
                     <div class="mt-4">
                         <InputLabel for="password" value="Password" />
 
@@ -97,13 +132,6 @@ const submit = () => {
                     </div>
 
                     <div class="flex items-center justify-end mt-4">
-                        <Link
-                            :href="route('login')"
-                            class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800"
-                        >
-                            Already registered?
-                        </Link>
-
                         <PrimaryButton
                             class="ml-4"
                             :class="{ 'opacity-25': form.processing }"
@@ -114,112 +142,117 @@ const submit = () => {
                     </div>
                 </form>
             </div>
-            <div class="flex flex-col py-12 max-w-4xl mx-auto">
-                <!-- <div>{{ $page.props.auth }}test</div> -->
-                <table
-                    class="w-full table-auto text-sm text-left text-gray-500 dark:text-gray-400"
-                >
-                    <thead
-                        class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
+
+            <div class="flex flex-col py-12 max-w-6xl mx-auto">
+                <div class="overflow-x-auto">
+                    <table
+                        class="w-full table-auto text-sm text-left text-gray-500 dark:text-gray-400"
                     >
-                        <tr>
-                            <th scope="col" class="px-6 py-3">Name</th>
-                            <th scope="col" class="px-6 py-3">Email</th>
-                            <th scope="col" class="px-6 py-3">Username</th>
-                            <th scope="col" class="px-6 py-3">Role</th>
-                            <th scope="col" class="px-6 py-3">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="user in $page.props.users"
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
+                        <thead
+                            class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400"
                         >
-                            <th
-                                scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                            <tr>
+                                <th scope="col" class="px-6 py-3">#</th>
+                                <th scope="col" class="px-6 py-3">Name</th>
+                                <th scope="col" class="px-6 py-3">Email</th>
+                                <th scope="col" class="px-6 py-3">Username</th>
+                                <th scope="col" class="px-6 py-3">Role</th>
+                                <th scope="col" class="px-6 py-3">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(user, index) in $page.props.users"
+                                :key="user.id"
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                             >
-                                {{ user.name }}
-                                {{
-                                    $page.props.auth.user.id === user.id
-                                        ? "(you)"
-                                        : ""
-                                }}
-                            </th>
-                            <td class="px-6 py-4">{{ user.email }}</td>
-                            <td class="px-6 py-4">{{ user.username }}</td>
-                            <td class="px-6 py-4">
-                                <span class="border p-1 rounded text-xs">{{
-                                    user.role
-                                }}</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <div
-                                    class="inline-flex justify-center items-center gap-1"
+                                <td class="px-6 py-4 text-xs">{{ index }}</td>
+                                <th
+                                    scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    <button
-                                        type="button"
-                                        class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                    {{ user.name }}
+                                    {{
+                                        $page.props.auth.user.id === user.id
+                                            ? "(you)"
+                                            : ""
+                                    }}
+                                </th>
+                                <td class="px-6 py-4">{{ user.email }}</td>
+                                <td class="px-6 py-4">{{ user.username }}</td>
+                                <td class="px-6 py-4">
+                                    <span class="border p-1 rounded text-xs">{{
+                                        user.role
+                                    }}</span>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div
+                                        class="inline-flex justify-center items-center gap-1"
                                     >
-                                        Edit
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- <tr
-                            class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
-                        >
-                            <th
-                                scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                        <button
+                                            type="button"
+                                            class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <!-- <tr
+                                class="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                             >
-                                John Doe
-                            </th>
-                            <td class="px-6 py-4">sample@gmail.com</td>
-                            <td class="px-6 py-4">johndoe</td>
-                            <td class="px-6 py-4">
-                                <span class="border p-1 rounded text-xs"
-                                    >superadmin</span
+                                <th
+                                    scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                            </td>
-                            <td class="px-6 py-4">
-                                <div
-                                    class="inline-flex justify-center items-center gap-1"
+                                    John Doe
+                                </th>
+                                <td class="px-6 py-4">sample@gmail.com</td>
+                                <td class="px-6 py-4">johndoe</td>
+                                <td class="px-6 py-4">
+                                    <span class="border p-1 rounded text-xs"
+                                        >superadmin</span
+                                    >
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div
+                                        class="inline-flex justify-center items-center gap-1"
+                                    >
+                                        <button
+                                            type="button"
+                                            class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                        >
+                                            Edit
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                        >
+                                            Delete
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr class="bg-white dark:bg-gray-800">
+                                <th
+                                    scope="row"
+                                    class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                                 >
-                                    <button
-                                        type="button"
-                                        class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        type="button"
-                                        class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                        <tr class="bg-white dark:bg-gray-800">
-                            <th
-                                scope="row"
-                                class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                            >
-                                Magic Mouse 2
-                            </th>
-                            <td class="px-6 py-4">Black</td>
-                            <td class="px-6 py-4">Accessories</td>
-                            <td class="px-6 py-4">$99</td>
-                        </tr> -->
-                    </tbody>
-                </table>
+                                    Magic Mouse 2
+                                </th>
+                                <td class="px-6 py-4">Black</td>
+                                <td class="px-6 py-4">Accessories</td>
+                                <td class="px-6 py-4">$99</td>
+                            </tr> -->
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->enum('role', ['superadmin', 'admin', 'customer'])->default('customer');
+            $table->string('username')->unique();
         });
     }
 
@@ -27,6 +28,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->removeColumn('role');
+            $table->removeColumn('username');
         });
     }
 };
