@@ -43,7 +43,7 @@ class ManageUsersController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'role' => ['required', 'string', Rule::in(User::$roles)],
         ]);
-        $user = User::create([
+        User::create([
             'name' => $request->name,
             'email' => $request->email,
             'username' => $request->username,
@@ -51,19 +51,9 @@ class ManageUsersController extends Controller
             'role' => $request->role,
         ]);
 
-        return to_route('users.index', ['users' => [$user]]);
+        return to_route('users.index');
     }
 
-    // /**
-    //  * Store a newly created resource in storage.
-    //  *
-    //  * @param  \Illuminate\Http\Request  $request
-    //  * @return \Illuminate\Http\Response
-    //  */
-    // public function store(Request $request)
-    // {
-    //     //
-    // }
 
     /**
      * Display the specified resource.
@@ -77,26 +67,33 @@ class ManageUsersController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\User  $user
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(User $user)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(Request $request)
     {
-        //
+        $user = User::findOrFail($request->id);
+        if ($request->user()->cannot('update', $user)) {
+            abort(403);
+        }
+        // dd($request->all(), $user->fill($request->all())->toArray());
+        $validated = $request->validate([
+            'name' => 'string|max:255',
+            'email' => ['string', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'username' => ['string', 'max:15', Rule::unique(User::class)->ignore($user->id)],
+            'password' => ['confirmed', Rules\Password::defaults()],
+            'role' => ['string', Rule::in(User::$roles)],
+        ]);
+        $user->fill($validated);
+        $user->save();
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        return to_route('users.index');
     }
 
     /**

@@ -35,7 +35,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/users', [ManageUsersController::class, 'index'])->middleware(['auth', 'verified'])->name('users.index');
 Route::post('/users/store', [ManageUsersController::class, 'store'])->middleware(['auth', 'verified'])->name('users.store');
-Route::put('/users/update', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
+Route::patch('/users/update', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
