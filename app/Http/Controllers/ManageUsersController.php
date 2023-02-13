@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -31,7 +32,7 @@ class ManageUsersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request): RedirectResponse
     {
         if ($request->user()->cannot('create', User::class)) {
             abort(403);
@@ -73,7 +74,7 @@ class ManageUsersController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request)
+    public function update(Request $request): RedirectResponse
     {
         $user = User::findOrFail($request->id);
         if ($request->user()->cannot('update', $user)) {
@@ -87,11 +88,15 @@ class ManageUsersController extends Controller
             'password' => ['confirmed', Rules\Password::defaults()],
             'role' => ['string', Rule::in(User::$roles)],
         ]);
-        $user->fill($validated);
-        $user->save();
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        // TODO: custom validator
+        if (!$request->user()->isSuperAdmin() && $user->role !== $validated['role']) {
+            $validated['role'] = $user->role;
         }
+        $user->fill($validated);
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
+        }
+        $user->save();
 
         return to_route('users.index');
     }
@@ -102,8 +107,9 @@ class ManageUsersController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(User $user)
+    public function destroy(User $user): RedirectResponse
     {
-        //
+        $user->deleteOrFail();
+        return to_route('users.index');
     }
 }

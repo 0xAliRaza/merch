@@ -67,7 +67,7 @@ class UserPolicy
      */
     public function update(User $user, User $model)
     {
-        return $user->isAdmin() && !$model->isSuperAdmin() && $user->id === $model->id;
+        return ($user->isAdmin() && !$model->isSuperAdmin()) && ($user->id === $model->id);
     }
 
     /**

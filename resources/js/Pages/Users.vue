@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -53,7 +53,7 @@ const onEditUserFormSubmit = (user) => {
 };
 const editUser = (user) => {
     editUserForm.clearErrors();
-    editingUser.value = true;
+    editingUser.value = user.id;
     editUserForm.defaults(user);
     editUserForm.reset();
 };
@@ -71,6 +71,13 @@ const hideEditUserForm = () => {
     editUserForm.reset();
     editUserForm.clearErrors();
     editingUser.value = false;
+};
+
+const deleteUser = (user) => {
+    router.delete(route("users.destroy", { user }), {
+        only: ["users"],
+        onBefore: () => confirm("Are you sure you want to delete this user?"),
+    });
 };
 </script>
 
@@ -130,16 +137,31 @@ const hideEditUserForm = () => {
                                     <div
                                         class="inline-flex justify-center items-center gap-1"
                                     >
+                                        <!-- TODO: AVOID USING HARDCODED roles -->
                                         <button
                                             type="button"
-                                            class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                            class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase disabled:opacity-50"
                                             @click="editUser(user)"
+                                            :disabled="
+                                                $page.props.auth.user.role !==
+                                                    'superadmin' &&
+                                                user.id !==
+                                                    $page.props.auth.user.id
+                                            "
                                         >
                                             Edit
                                         </button>
+                                        {{ $page.props.auth.user }}
                                         <button
                                             type="button"
-                                            class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase"
+                                            class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase disabled:opacity-50"
+                                            :disabled="
+                                                $page.props.auth.user.role !==
+                                                    'superadmin' &&
+                                                user.id !==
+                                                    $page.props.auth.user.id
+                                            "
+                                            @click="deleteUser(user)"
                                         >
                                             Delete
                                         </button>
@@ -167,7 +189,7 @@ const hideEditUserForm = () => {
 
                         <InputError
                             class="mt-2"
-                            :message="$page.props.errors.name"
+                            :message="userForm.errors.name"
                         />
                     </div>
 
@@ -185,7 +207,7 @@ const hideEditUserForm = () => {
 
                         <InputError
                             class="mt-2"
-                            :message="editUserForm.errors.username"
+                            :message="userForm.errors.username"
                         />
                     </div>
                     <div class="mt-4">
@@ -198,13 +220,13 @@ const hideEditUserForm = () => {
                             required
                             autocomplete="role"
                         >
-                            <option selected>admin</option>
+                            <option>admin</option>
                             <option>superadmin</option>
                         </SelectInput>
 
                         <InputError
                             class="mt-2"
-                            :message="editUserForm.errors.role"
+                            :message="userForm.errors.role"
                         />
                     </div>
                     <div class="mt-4">
@@ -221,7 +243,7 @@ const hideEditUserForm = () => {
 
                         <InputError
                             class="mt-2"
-                            :message="editUserForm.errors.email"
+                            :message="userForm.errors.email"
                         />
                     </div>
                     <div class="mt-4">
@@ -238,7 +260,7 @@ const hideEditUserForm = () => {
 
                         <InputError
                             class="mt-2"
-                            :message="editUserForm.errors.password"
+                            :message="userForm.errors.password"
                         />
                     </div>
 
@@ -259,7 +281,7 @@ const hideEditUserForm = () => {
 
                         <InputError
                             class="mt-2"
-                            :message="editUserForm.errors.password_confirmation"
+                            :message="userForm.errors.password_confirmation"
                         />
                     </div>
 
@@ -318,6 +340,7 @@ const hideEditUserForm = () => {
                             class="mt-1 block w-full"
                             v-model="editUserForm.role"
                             autocomplete="role"
+                            :disabled="editUserForm.role !== 'superadmin'"
                         >
                             <option selected>admin</option>
                             <option>superadmin</option>
