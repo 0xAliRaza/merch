@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ManageUsersController;
+use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -37,6 +38,10 @@ Route::get('/users', [ManageUsersController::class, 'index'])->middleware(['auth
 Route::post('/users/store', [ManageUsersController::class, 'store'])->middleware(['auth', 'verified'])->name('users.store');
 Route::patch('/users/update', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
 Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->middleware(['auth', 'verified'])->name('users.destroy');
+// Products
+Route::get('/products/create', [ProductController::class, 'create'])->middleware(['auth', 'verified'])->name('products.create');
+Route::post('/products/store', [ProductController::class, 'store'])->middleware(['auth', 'verified'])->name('products.store');
+Route::post('/products/image-upload', [ProductController::class, 'imageUpload'])->middleware(['auth', 'verified'])->name('products.imageUpload');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

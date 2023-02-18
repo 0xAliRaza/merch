@@ -151,7 +151,6 @@ const deleteUser = (user) => {
                                         >
                                             Edit
                                         </button>
-                                        {{ $page.props.auth.user }}
                                         <button
                                             type="button"
                                             class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded uppercase disabled:opacity-50"
