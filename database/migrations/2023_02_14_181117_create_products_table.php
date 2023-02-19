@@ -19,10 +19,8 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->unsignedTinyInteger('discount')->default(0)->nullable();
-            $table->unsignedBigInteger('image');
             $table->decimal('price', 8, 2);
 
-            $table->foreign('image')->references('id')->on('product_images');
         });
     }
 

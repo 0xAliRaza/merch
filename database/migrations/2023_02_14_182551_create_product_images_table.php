@@ -18,8 +18,10 @@ return new class extends Migration
             $table->timestamps();
             $table->string('480');
             $table->string('800');
-            $table->string('1600');
+            $table->string('1200');
             $table->string('original');
+            $table->unsignedBigInteger('product_id');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
     }
 

@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Product;
-use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 
@@ -35,10 +36,19 @@ class ProductController extends Controller
     public function imageUpload(Request $request)
     {
         $request->validate([
-            'file' => 'mimes:jpeg,jpg,png|required|max:10000' // max 10000kb
-        ]);
-        $name = $request->file('file')->store('temporary');
-        return response()->json(['filename' => basename($name)]);
+            'file' => 'required|image|mimes:jpeg,jpg,png|max:10000|dimensions:min_width=1000,min_height=1000' // max 10000kb
+        ], ['file.max' => 'The uploaded image must be less than 10 MB in size.',    'file.dimensions' => 'The uploaded image must have a minimum width and height of 1000 pixels.',]);
+
+
+        // Generate a secure filename for the image
+        $filename = uniqid() . '.' . $request->file('file')->getClientOriginalExtension();
+
+        // Store the image in the temporary directory
+        $img = Image::make($request->file('file'));
+        $path = Storage::disk('temporary')->path($filename);
+        $img->save($path, 80);
+
+        return response()->json(['filename' => $filename]);
     }
 
     /**

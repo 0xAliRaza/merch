@@ -22,26 +22,37 @@ onMounted(() => {
             "X-CSRF-TOKEN": csrfToken,
         },
         acceptedFiles: "image/png,image/jpeg,image/jpg",
-        maxFiles: 1,
+        maxFiles: 5,
     });
     dropzone.on("success", (file, response) => {
         form.images.push(response.filename);
         form.main_image = form.images.length - 1;
     });
-    dropzone.on("error", (file, response) => {
-        if (file.previewElement) {
-            file.previewElement.classList.add("dz-error");
-            if (response.message) {
-                response = response.message;
-            } else if (typeof response !== "string" && response.error) {
-                response = response.error;
-            }
-            for (let node of file.previewElement.querySelectorAll(
-                "[data-dz-errormessage]"
-            )) {
-                node.textContent = response;
-            }
+    dropzone.on("error", (file, err) => {
+        // if (file.previewElement) {
+        //     file.previewElement.classList.add("dz-error");
+        //     if (err.message) {
+        //         err = err.message;
+        //     } else if (typeof err !== "string" && err.error) {
+        //         err = err.error;
+        //     }
+        //     for (let node of file.previewElement.querySelectorAll(
+        //         "[data-dz-errormessage]"
+        //     )) {
+        //         node.textContent = err;
+        //     }
+        // }
+        dropzone.removeFile(file);
+        // debugger;
+        if (err.message) {
+            err = err.message;
+        } else if (typeof err !== "string" && err.file) {
+            err = err.file[0] ?? err.file;
         }
+        if (!form.errors.images) {
+            form.errors.images = {};
+        }
+        form.errors.images["imageUploadError"] = err;
     });
 });
 let form = useForm({
@@ -66,7 +77,7 @@ const onFormSubmit = () => {
                 }
             }
             if (errors.main_image) {
-                form.errors.images.push(errors.main_image);
+                form.errors.images["main_image"] = errors.main_image;
             }
         },
         preserveScroll: true,
@@ -169,16 +180,19 @@ const onFormSubmit = () => {
                             v-model="form.image"
                             required
                         /> -->
-                        <div v-for="err in form.errors.images" :key="err">
+                        <!-- <div
+                            v-for="(err, index) in form.errors.images"
+                            :key="err"
+                        >
                             {{ err }}
-                        </div>
-                        <!-- {{ form.errors.images }} {{ "hello" }}
+                            {{ index }}
+                        </div> -->
                         <InputError
                             v-for="err in form.errors.images"
                             :key="err"
                             class="mt-2"
                             :message="err"
-                        /> -->
+                        />
                     </div>
 
                     <div class="flex items-center justify-end mt-4">
