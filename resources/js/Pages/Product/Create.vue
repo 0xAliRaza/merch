@@ -21,29 +21,48 @@ onMounted(() => {
         headers: {
             "X-CSRF-TOKEN": csrfToken,
         },
+        addRemoveLinks: true,
+        dictRemoveFile: "Remove",
         acceptedFiles: "image/png,image/jpeg,image/jpg",
         maxFiles: 5,
     });
     dropzone.on("success", (file, response) => {
+        file.filename = response.filename;
         form.images.push(response.filename);
-        form.main_image = form.images.length - 1;
+        if (form.images.length === 1) {
+            form.main_image_index = 0;
+            const btn = document.querySelector(".set-main-image-btn");
+            btn.innerHTML = "MAIN";
+            btn.setAttribute("disabled", true);
+        }
     });
+    const resetMainImageBtns = () => {
+        document.querySelectorAll(".set-main-image-btn").forEach((btn) => {
+            btn.removeAttribute("disabled");
+            btn.innerText = "Set as main";
+        });
+    };
+    dropzone.on("thumbnail", (file) => {
+        const setDefaultButton = Dropzone.createElement(
+            '<button type="button" class="set-main-image-btn !cursor-pointer text-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase w-full disabled:opacity-50 hover:underline disabled:pointer-events-none">Set as main</button>'
+        );
+        setDefaultButton.addEventListener("click", (event) => {
+            // debugger;
+            if (file.status === "success") {
+                const imgIndex = form.images.findIndex(
+                    (val) => file.filename === val
+                );
+                resetMainImageBtns();
+                form.main_image_index = imgIndex;
+                event.target.innerText = "MAIN";
+                event.target.setAttribute("disabled", true);
+            }
+            console.log(file);
+        });
+        file.previewElement.appendChild(setDefaultButton);
+    });
+
     dropzone.on("error", (file, err) => {
-        // if (file.previewElement) {
-        //     file.previewElement.classList.add("dz-error");
-        //     if (err.message) {
-        //         err = err.message;
-        //     } else if (typeof err !== "string" && err.error) {
-        //         err = err.error;
-        //     }
-        //     for (let node of file.previewElement.querySelectorAll(
-        //         "[data-dz-errormessage]"
-        //     )) {
-        //         node.textContent = err;
-        //     }
-        // }
-        dropzone.removeFile(file);
-        // debugger;
         if (err.message) {
             err = err.message;
         } else if (typeof err !== "string" && err.file) {
@@ -53,6 +72,7 @@ onMounted(() => {
             form.errors.images = {};
         }
         form.errors.images["imageUploadError"] = err;
+        dropzone.removeFile(file);
     });
 });
 let form = useForm({
@@ -61,7 +81,7 @@ let form = useForm({
     price: null,
     discount: null,
     images: [],
-    main_image: null, // index of main image im images array
+    main_image_index: null, // index of main image im images array
 });
 
 const onFormSubmit = () => {
@@ -76,8 +96,9 @@ const onFormSubmit = () => {
                     form.errors.images[key] = errors[key];
                 }
             }
-            if (errors.main_image) {
-                form.errors.images["main_image"] = errors.main_image;
+            if (errors.main_image_index) {
+                form.errors.images["main_image_index"] =
+                    errors.main_image_index;
             }
         },
         preserveScroll: true,
@@ -172,7 +193,10 @@ const onFormSubmit = () => {
                     <div class="mt-4">
                         <InputLabel for="image" value="Image" />
 
-                        <div ref="dropzoneRef" class="dropzone mt-1"></div>
+                        <div
+                            ref="dropzoneRef"
+                            class="dropzone mt-1 bg-white"
+                        ></div>
                         <!-- <Input
                             id="image"
                             type="file"

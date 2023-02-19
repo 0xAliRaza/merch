@@ -43,34 +43,7 @@ class StoreProductRequest extends FormRequest
             'discount' => 'required|nullable|numeric|min:0|max:100',
             'images' => ['required', 'array', Rule::in($filenames)],
             'images.*' => 'required|string',
-            'main_image' => 'required|integer|min:0|max:' . (count($request->images) - 1),
+            'main_image_index' => 'required|integer|min:0|max:' . (count($request->images) - 1),
         ];
     }
-
-    // protected function failedValidation(\Illuminate\Contracts\Validation\Validator $validator)
-    // {
-    //     $errors = $validator->errors()->toArray();
-
-    //     // Merge error messages for images field and its child rules
-    //     $imageErrors = array_merge(
-    //         $errors['images'] ?? [],
-    //         ...array_values($errors['images.*'] ?? [])
-    //     );
-    //     // // Convert image error messages to an associative array
-    //     $imageErrorMessages = [];
-    //     foreach ($imageErrors as $field => $message) {
-    //         $fieldParts = explode('.', $field);
-    //         $index = end($fieldParts);
-    //         $imageErrorMessages[$index] = $message;
-    //     }
-
-    //     dd ($imageErrorMessages);
-    //     // Return image error messages in object format
-    //     if (!empty($imageErrorMessages)) {
-    //         $response = response()->json(['images' => $imageErrorMessages], 422);
-    //         throw new \Illuminate\Validation\ValidationException($validator, $response);
-    //     }
-
-    //     parent::failedValidation($validator);
-    // }
 }
