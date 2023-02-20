@@ -10,6 +10,8 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\ProductImage;
+use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
@@ -57,10 +59,55 @@ class ProductController extends Controller
      * @param  \App\Http\Requests\StoreProductRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreProductRequest $request)
+    public function store(StoreProductRequest $request): RedirectResponse
     {
-        dd($request->all());
-        dd($request->user()->can('create'));
+        $validated = $request->validated();
+
+        $productImages = [];
+
+
+        foreach ($validated['images'] as $originalImageName) {
+            $productImage = new ProductImage();
+            $fileContents = Storage::disk('temporary')->get($originalImageName);
+            Storage::disk('images')->put($originalImageName, $fileContents);
+
+            $productImage->original = Storage::disk("images")->url($originalImageName);
+
+            // Create an intervention/image instance for the original image
+            $image = Image::make($fileContents);
+
+            // Define the target widths for the resized images
+            $targetWidths = ['small'=> 480, 'medium'=> 800, 'large' => 1200];
+
+            // Loop through the target widths and resize the image for each width
+            foreach ($targetWidths as $widthName => $width) {
+
+                $resizedImage = clone $image;
+                $resizedImage->resize($width, null, function ($constraint) {
+                    $constraint->aspectRatio();
+                    $constraint->upsize();
+                });
+                // Save the resized image to the "images" disk
+                $resizedImagePath = Storage::disk('images')->path("{$widthName}/{$originalImageName}");
+
+                // Create the directory if it does not exist
+                Storage::disk('images')->makeDirectory($widthName);
+
+                $resizedImage->save($resizedImagePath);
+                $productImage->setAttribute($widthName, Storage::disk('images')->url("{$widthName}/{$originalImageName}"));
+            }
+
+            // Delete the original image from the "temporary" disk
+            Storage::disk('temporary')->delete($originalImageName);
+
+            // Push the new model to array
+            array_push($productImages, $productImage);
+        }
+        $product = Product::create($validated);
+        $product->images()->saveMany($productImages);
+        $product->default_image =  $productImages[$request->input('default_image_index')]->id;
+        $product->save();
+        return to_route('dashboard');
     }
 
     /**

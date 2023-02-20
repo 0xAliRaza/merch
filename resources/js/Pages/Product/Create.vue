@@ -30,21 +30,22 @@ onMounted(() => {
         file.filename = response.filename;
         form.images.push(response.filename);
         if (form.images.length === 1) {
-            form.main_image_index = 0;
-            const btn = document.querySelector(".set-main-image-btn");
-            btn.innerHTML = "MAIN";
+            form.default_image_index = 0;
+            const btn = document.querySelector(".set-default-image-btn");
+            btn.innerHTML = "default";
             btn.setAttribute("disabled", true);
         }
+        form.errors.images = {};
     });
-    const resetMainImageBtns = () => {
-        document.querySelectorAll(".set-main-image-btn").forEach((btn) => {
+    const resetDefaultImageBtn = () => {
+        document.querySelectorAll(".set-default-image-btn").forEach((btn) => {
             btn.removeAttribute("disabled");
-            btn.innerText = "Set as main";
+            btn.innerText = "Set as default";
         });
     };
     dropzone.on("thumbnail", (file) => {
         const setDefaultButton = Dropzone.createElement(
-            '<button type="button" class="set-main-image-btn !cursor-pointer text-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase w-full disabled:opacity-50 hover:underline disabled:pointer-events-none">Set as main</button>'
+            '<button type="button" class="set-default-image-btn !cursor-pointer text-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase w-full disabled:opacity-50 hover:underline disabled:pointer-events-none">Set as default</button>'
         );
         setDefaultButton.addEventListener("click", (event) => {
             // debugger;
@@ -52,12 +53,11 @@ onMounted(() => {
                 const imgIndex = form.images.findIndex(
                     (val) => file.filename === val
                 );
-                resetMainImageBtns();
-                form.main_image_index = imgIndex;
-                event.target.innerText = "MAIN";
+                resetDefaultImageBtn();
+                form.default_image_index = imgIndex;
+                event.target.innerText = "Default";
                 event.target.setAttribute("disabled", true);
             }
-            console.log(file);
         });
         file.previewElement.appendChild(setDefaultButton);
     });
@@ -68,9 +68,7 @@ onMounted(() => {
         } else if (typeof err !== "string" && err.file) {
             err = err.file[0] ?? err.file;
         }
-        if (!form.errors.images) {
-            form.errors.images = {};
-        }
+        form.errors.images = {};
         form.errors.images["imageUploadError"] = err;
         dropzone.removeFile(file);
     });
@@ -81,7 +79,7 @@ let form = useForm({
     price: null,
     discount: null,
     images: [],
-    main_image_index: null, // index of main image im images array
+    default_image_index: null, // index of default image im images array
 });
 
 const onFormSubmit = () => {
@@ -96,9 +94,9 @@ const onFormSubmit = () => {
                     form.errors.images[key] = errors[key];
                 }
             }
-            if (errors.main_image_index) {
-                form.errors.images["main_image_index"] =
-                    errors.main_image_index;
+            if (errors.default_image_index) {
+                form.errors.images["default_image_index"] =
+                    errors.default_image_index;
             }
         },
         preserveScroll: true,

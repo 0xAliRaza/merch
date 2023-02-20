@@ -47,7 +47,13 @@ return [
             'driver' => 'local',
             'root' => storage_path('app/temporary'),
             'url' => env('APP_URL') . '/storage/temporary',
-            'visibility' => 'public',
+            'throw' => true,
+
+        ],
+        'images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images/'),
+            'url' => env('APP_URL') . '/storage/images',
             'throw' => true,
 
         ],

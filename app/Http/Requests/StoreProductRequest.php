@@ -43,7 +43,20 @@ class StoreProductRequest extends FormRequest
             'discount' => 'required|nullable|numeric|min:0|max:100',
             'images' => ['required', 'array', Rule::in($filenames)],
             'images.*' => 'required|string',
-            'main_image_index' => 'required|integer|min:0|max:' . (count($request->images) - 1),
+            'default_image_index' => 'required_with:images|nullable|integer|min:0|max:' . (count($request->images ?? []) - 1),
+        ];
+    }
+
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'default_image_index' => 'default image',
         ];
     }
 }
