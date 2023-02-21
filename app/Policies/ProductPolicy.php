@@ -41,7 +41,6 @@ class ProductPolicy
      */
     public function create(User $user)
     {
-        return true;
         return $user->isSuperAdmin() || $user->isAdmin();
     }
 

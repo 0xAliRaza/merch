@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use Inertia\Inertia;
 use Inertia\Response;
 use App\Models\Product;
+use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
-use App\Models\ProductImage;
-use Illuminate\Http\RedirectResponse;
 
 class ProductController extends Controller
 {
@@ -30,13 +30,19 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        if($request->user()->cannot('create', Product::class)) {
+            abort(404);
+        }
         return Inertia::render('Product/Create');
     }
 
     public function imageUpload(Request $request)
     {
+        if ($request->user()->cannot('create', Product::class)) {
+            abort(404);
+        }
         $request->validate([
             'file' => 'required|image|mimes:jpeg,jpg,png|max:10000|dimensions:min_width=1000,min_height=1000' // max 10000kb
         ], ['file.max' => 'The uploaded image must be less than 10 MB in size.',    'file.dimensions' => 'The uploaded image must have a minimum width and height of 1000 pixels.',]);
@@ -61,6 +67,7 @@ class ProductController extends Controller
      */
     public function store(StoreProductRequest $request): RedirectResponse
     {
+
         $validated = $request->validated();
 
         $productImages = [];
@@ -77,7 +84,7 @@ class ProductController extends Controller
             $image = Image::make($fileContents);
 
             // Define the target widths for the resized images
-            $targetWidths = ['small'=> 480, 'medium'=> 800, 'large' => 1200];
+            $targetWidths = ['small' => 480, 'medium' => 800, 'large' => 1200];
 
             // Loop through the target widths and resize the image for each width
             foreach ($targetWidths as $widthName => $width) {
