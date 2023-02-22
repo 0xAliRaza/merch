@@ -12,6 +12,7 @@ use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Http\Requests\StoreProductImageRequest;
 
 class ProductController extends Controller
 {
@@ -32,31 +33,34 @@ class ProductController extends Controller
      */
     public function create(Request $request): Response
     {
-        if($request->user()->cannot('create', Product::class)) {
+        if ($request->user()->cannot('create', Product::class)) {
             abort(404);
         }
         return Inertia::render('Product/Create');
     }
 
-    public function imageUpload(Request $request)
+    public function imageUpload(StoreProductImageRequest $request)
     {
-        if ($request->user()->cannot('create', Product::class)) {
-            abort(404);
-        }
-        $request->validate([
-            'file' => 'required|image|mimes:jpeg,jpg,png|max:10000|dimensions:min_width=1000,min_height=1000' // max 10000kb
-        ], ['file.max' => 'The uploaded image must be less than 10 MB in size.',    'file.dimensions' => 'The uploaded image must have a minimum width and height of 1000 pixels.',]);
+        $file = $request->validated()['file'];
 
 
         // Generate a secure filename for the image
-        $filename = uniqid() . '.' . $request->file('file')->getClientOriginalExtension();
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
 
         // Store the image in the temporary directory
-        $img = Image::make($request->file('file'));
+        $img = Image::make($file);
         $path = Storage::disk('temporary')->path($filename);
         $img->save($path, 80);
 
         return response()->json(['filename' => $filename]);
+    }
+    public function imageDelete($image)
+    {
+        if (!Storage::disk("temporary")->exists($image)) {
+            abort(404);
+        }
+        Storage::disk('temporary')->delete($image);
+        return to_route('dashboard');
     }
 
     /**

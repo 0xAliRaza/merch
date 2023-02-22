@@ -1,5 +1,5 @@
 <script setup>
-import { Head, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
@@ -36,6 +36,11 @@ onMounted(() => {
             btn.setAttribute("disabled", true);
         }
         form.errors.images = {};
+    });
+    dropzone.on("removedfile", (file) => {
+        if (file.status === "success" && file.filename) {
+            router.delete(`/products/image/${file.filename}`);
+        }
     });
     const resetDefaultImageBtn = () => {
         document.querySelectorAll(".set-default-image-btn").forEach((btn) => {

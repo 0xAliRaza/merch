@@ -42,6 +42,9 @@ Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->middl
 Route::get('/products/create', [ProductController::class, 'create'])->middleware(['auth', 'verified'])->name('products.create');
 Route::post('/products/store', [ProductController::class, 'store'])->middleware(['auth', 'verified'])->name('products.store');
 Route::post('/products/image-upload', [ProductController::class, 'imageUpload'])->middleware(['auth', 'verified'])->name('products.imageUpload');
+Route::delete('/products/image/{image}', [ProductController::class, 'imageDelete'])->middleware(['auth', 'verified'])
+    ->where('image', '[\w-]+\.(jpg|jpeg|png)')
+    ->name('products.imageDelete');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
