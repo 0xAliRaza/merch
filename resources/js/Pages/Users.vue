@@ -1,13 +1,17 @@
 <script setup>
-import { Head, router, useForm } from "@inertiajs/vue3";
+import { Head, router, useForm, usePage } from "@inertiajs/vue3";
+import { TabulatorFull as Tabulator } from "tabulator-tables"; //import Tabulator library
+
 import InputError from "@/Components/InputError.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import SelectInput from "@/Components/SelectInput.vue";
-import { ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+
 const editingUser = ref(false);
+const { users, auth } = usePage().props;
 let userForm = useForm({
     name: "",
     email: "",
@@ -79,6 +83,120 @@ const deleteUser = (user) => {
         onBefore: () => confirm("Are you sure you want to delete this user?"),
     });
 };
+
+const table = ref(null);
+
+const tabulator = ref(null);
+
+const tableData = computed(() => {
+    return users;
+});
+onMounted(() => {
+    //instantiate Tabulator when element is mounted
+    tabulator.value = new Tabulator(table.value, {
+        data: tableData.value, //link data to table
+        reactiveData: true, //enable data reactivity
+        // layout: "fitDataFill",
+        layout: "fitColumn",
+        columns: [
+            {
+                // Index column
+                title: "#",
+                field: "index",
+                formatter: "rownum",
+                widthShrink: true,
+                hozAlign: "center",
+                headerSort: false,
+                cssClass: "tabulator-index-column",
+            },
+            {
+                title: "Name",
+                field: "name",
+                cssClass: "tabulator-name-column",
+                formatter(cell) {
+                    const divEl = document.createElement("div");
+                    const nameEl = document.createElement("span");
+
+                    nameEl.textContent = cell.getValue();
+
+                    if (cell.getRow().getData().id === auth.user.id) {
+                        nameEl.classList.add("font-bold");
+                    }
+                    divEl.appendChild(nameEl);
+                    return divEl;
+                },
+            },
+            { title: "Email", field: "email" },
+            { title: "Username", field: "username" },
+            {
+                title: "Role",
+                field: "role",
+                formatter: function (cell) {
+                    const spanEl = document.createElement("span");
+                    spanEl.classList.add("border", "p-1", "rounded", "text-xs");
+                    spanEl.innerText = cell.getValue();
+                    return spanEl;
+                },
+            },
+            {
+                title: "Actions",
+                formatter: function (cell) {
+                    return createActionBtns(auth.user, cell.getRow().getData());
+                },
+            },
+        ], //define table columns
+    });
+});
+
+const createActionBtns = (authUser, cellUser) => {
+    // create the container div
+    const container = document.createElement("div");
+
+    // create the first button
+    const editBtn = document.createElement("button");
+    editBtn.type = "button";
+    editBtn.classList.add(
+        "bg-emerald-500",
+        "text-white",
+        "text-xs",
+        "font-bold",
+        "px-2",
+        "py-1",
+        "rounded",
+        "uppercase",
+        "disabled:opacity-50"
+    );
+    editBtn.innerText = "Edit";
+    editBtn.disabled =
+        authUser.role !== "superadmin" && cellUser.id !== authUser.id;
+    editBtn.addEventListener("click", () => editUser(cellUser));
+    // create the second button
+    const deleteBtn = document.createElement("button");
+    deleteBtn.type = "button";
+    deleteBtn.classList.add(
+        "bg-red-500",
+        "text-white",
+        "text-xs",
+        "font-bold",
+        "px-2",
+        "py-1",
+        "rounded",
+        "uppercase",
+        "disabled:opacity-50",
+        "ml-2"
+    );
+    deleteBtn.innerText = "Delete";
+    deleteBtn.disabled =
+        authUser.role !== "superadmin" && cellUser.id !== authUser.id;
+    deleteBtn.addEventListener("click", () => deleteUser(cellUser));
+
+    // append the buttons to the container div
+    container.appendChild(editBtn);
+    container.appendChild(deleteBtn);
+
+    // return the container div
+    return container;
+};
 </script>
 
 <template>
@@ -87,7 +205,10 @@ const deleteUser = (user) => {
     <div>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
             <div class="flex flex-col py-12 max-w-6xl mx-auto">
-                <div class="overflow-x-auto">
+                <div class="flex flex-col py-12 max-w-6xl">
+                    <div ref="table" id="users-table"></div>
+                </div>
+                <!-- <div class="overflow-x-auto">
                     <table
                         class="w-full table-auto text-sm text-left text-gray-500 dark:text-gray-400"
                     >
@@ -137,7 +258,7 @@ const deleteUser = (user) => {
                                     <div
                                         class="inline-flex justify-center items-center gap-1"
                                     >
-                                        <!-- TODO: AVOID USING HARDCODED roles -->
+                                         TODO: AVOID USING HARDCODED roles
                                         <button
                                             type="button"
                                             class="bg-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase disabled:opacity-50"
@@ -169,7 +290,7 @@ const deleteUser = (user) => {
                             </tr>
                         </tbody>
                     </table>
-                </div>
+                </div> -->
             </div>
             <div v-if="!editingUser" class="py-8 max-w-md mx-auto">
                 <form @submit.prevent="onUserFormSubmit">
@@ -424,3 +545,53 @@ const deleteUser = (user) => {
         </div>
     </div>
 </template>
+<style lang="scss">
+// $headerBorderColor: transparent;
+$borderColor: transparent;
+@import "tabulator-tables/src/scss/themes/tabulator_simple.scss";
+
+.tabulator#users-table {
+    // @apply w-full;
+    @apply rounded;
+    @apply bg-transparent;
+    height: 1000px;
+    // @apply w-full;
+    @apply text-gray-500;
+    @apply mx-auto;
+    .tabulator-table {
+        @apply text-gray-500;
+    }
+    .tabulator-header {
+        @apply text-gray-700 font-bold uppercase text-xs;
+    }
+
+    .tabulator-row {
+        @apply border-gray-200;
+        @apply bg-white;
+        .tabulator-cell {
+            @apply px-6 py-2;
+            @apply border-r-gray-100;
+        }
+    }
+    .tabulator-header {
+        // @apply red;
+        border-bottom: none;
+        .tabulator-arrow {
+            @apply border-b-gray-400;
+        }
+    }
+    .tabulator-col {
+        @apply border-r-gray-100;
+        @apply bg-gray-50;
+        .tabulator-col-content {
+            @apply px-6 py-3;
+        }
+    }
+    .tabulator-index-column {
+        @apply text-xs;
+    }
+    .tabulator-name-column {
+        @apply text-gray-900;
+    }
+}
+</style>
