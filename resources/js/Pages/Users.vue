@@ -576,8 +576,16 @@ $borderColor: transparent;
     .tabulator-header {
         // @apply red;
         border-bottom: none;
-        .tabulator-arrow {
-            @apply border-b-gray-400;
+        .tabulator-col.tabulator-sortable {
+            .tabulator-arrow {
+                @apply border-b-gray-400;
+            }
+            &[aria-sort="descending"] .tabulator-arrow {
+                @apply border-t-gray-700;
+            }
+            &[aria-sort="ascending"] .tabulator-arrow {
+                @apply border-b-gray-700;
+            }
         }
     }
     .tabulator-col {
