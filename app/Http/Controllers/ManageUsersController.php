@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -74,24 +75,10 @@ class ManageUsersController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user): RedirectResponse
     {
-        $user = User::findOrFail($request->id);
-        if ($request->user()->cannot('update', $user)) {
-            abort(403);
-        }
-        // dd($request->all(), $user->fill($request->all())->toArray());
-        $validated = $request->validate([
-            'name' => 'string|max:255',
-            'email' => ['string', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
-            'username' => ['string', 'max:15', Rule::unique(User::class)->ignore($user->id)],
-            'password' => ['confirmed', Rules\Password::defaults()],
-            'role' => ['string', Rule::in(User::$roles)],
-        ]);
-        // TODO: custom validator
-        if (!$request->user()->isSuperAdmin() && $user->role !== $validated['role']) {
-            $validated['role'] = $user->role;
-        }
+        $validated = $request->validated();
+
         $user->fill($validated);
         if ($user->isDirty('email')) {
             $user->email_verified_at = null;

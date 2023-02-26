@@ -31,6 +31,7 @@ let editUserForm = useForm({
 });
 
 const onUserFormSubmit = () => {
+    userForm.clearErrors();
     userForm.post(route("users.store"), {
         onSuccess: () => userForm.reset(),
         preserveScroll: true,
@@ -39,6 +40,7 @@ const onUserFormSubmit = () => {
 };
 
 const onEditUserFormSubmit = (user) => {
+    editUserForm.clearErrors();
     editUserForm
         .transform((data) => {
             // Remove empty values
@@ -48,12 +50,11 @@ const onEditUserFormSubmit = (user) => {
                 )
             );
         })
-        .patch(route("users.update"), {
-            onSuccess: () => editUserForm.reset(),
+        .patch(route("users.update", editUserForm.id), {
+            onSuccess: () => hideEditUserForm(),
             preserveScroll: true,
-            only: ["users"],
+            only: ["users", "errors"],
         });
-    hideEditUserForm();
 };
 const editUser = (user) => {
     editUserForm.clearErrors();
@@ -96,8 +97,7 @@ onMounted(() => {
     tabulator.value = new Tabulator(table.value, {
         data: tableData.value, //link data to table
         reactiveData: true, //enable data reactivity
-        // layout: "fitDataFill",
-        layout: "fitColumn",
+        layout: "fitDataFill",
         columns: [
             {
                 // Index column
@@ -460,7 +460,9 @@ const createActionBtns = (authUser, cellUser) => {
                             class="mt-1 block w-full"
                             v-model="editUserForm.role"
                             autocomplete="role"
-                            :disabled="editUserForm.role !== 'superadmin'"
+                            :disabled="
+                                editUserForm.id === $page.props.auth.user.id
+                            "
                         >
                             <option selected>admin</option>
                             <option>superadmin</option>
