@@ -24,8 +24,35 @@ class ManageUsersController extends Controller
         if ($request->user()->cannot('viewAny', User::class)) {
             abort(404);
         }
-        $users = User::whereIn('role', ['superadmin', 'admin'])->latest()->get()->toArray();
-        return Inertia::render('Users', ['users' => $users]);
+        // $users = User::whereIn('role', ['superadmin', 'admin'])->latest()->get()->toArray();
+        return Inertia::render('Users');
+    }
+
+
+
+    public function getPaginated(Request $request)
+    {
+        if ($request->user()->cannot('viewAny', User::class)) {
+            abort(404);
+        }
+        $request->validate([
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'filter' => 'nullable|array|max:1', // Only supporting 1 filter
+            'filter.*.field' => 'required|string|max:255',
+            'filter.*.type' => 'required|string|max:255',
+            'filter.*.value' => 'required|string|max:255',
+        ]);
+        $filter = $request->input('filter.0');
+        $size = $request->input('size', 15);
+
+        $users = User::query();
+
+        if ($filter && $filter['type'] === 'like' && $filter['field'] === 'name') {
+            $users = $users->where('name', 'LIKE', '%' . $filter['value'] . '%');
+        }
+
+        return $users->whereIn('role', ['superadmin', 'admin'])->latest()->paginate($size, ['*']);
     }
 
     /**

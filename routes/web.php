@@ -35,6 +35,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('/users', [ManageUsersController::class, 'index'])->middleware(['auth', 'verified'])->name('users.index');
+Route::get('/users/paginated', [ManageUsersController::class, 'getPaginated'])->middleware(['auth', 'verified'])->name('users.paginated');
 Route::post('/users/store', [ManageUsersController::class, 'store'])->middleware(['auth', 'verified'])->name('users.store');
 Route::patch('/users/{user}', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
 Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->middleware(['auth', 'verified'])->name('users.destroy');

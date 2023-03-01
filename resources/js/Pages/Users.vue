@@ -8,10 +8,10 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 import SecondaryButton from "@/Components/SecondaryButton.vue";
 import TextInput from "@/Components/TextInput.vue";
 import SelectInput from "@/Components/SelectInput.vue";
-import { computed, onMounted, ref } from "vue";
+import { onMounted, ref, watch } from "vue";
 
 const editingUser = ref(false);
-const { users, auth } = usePage().props;
+const { auth } = usePage().props;
 let userForm = useForm({
     name: "",
     email: "",
@@ -35,7 +35,7 @@ const onUserFormSubmit = () => {
     userForm.post(route("users.store"), {
         onSuccess: () => userForm.reset(),
         preserveScroll: true,
-        only: ["users", "errors"],
+        only: ["errors"],
     });
 };
 
@@ -53,7 +53,7 @@ const onEditUserFormSubmit = (user) => {
         .patch(route("users.update", editUserForm.id), {
             onSuccess: () => hideEditUserForm(),
             preserveScroll: true,
-            only: ["users", "errors"],
+            only: ["errors"],
         });
 };
 const editUser = (user) => {
@@ -80,35 +80,62 @@ const hideEditUserForm = () => {
 
 const deleteUser = (user) => {
     router.delete(route("users.destroy", { user }), {
-        only: ["users"],
+        only: ["errors"],
         onBefore: () => confirm("Are you sure you want to delete this user?"),
+        onSuccess: () => tabulator.value.setPage(1),
     });
 };
+
+const searchTerm = ref("");
+const debounce = (func, delay) => {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => {
+            func(...args);
+        }, delay);
+    };
+};
+
+const updateTableFilter = () => {
+    if (!searchTerm.value) {
+        tabulator.value.clearFilter();
+    } else {
+        tabulator.value.setFilter("name", "like", searchTerm.value);
+    }
+};
+
+watch(searchTerm, debounce(updateTableFilter, 300));
 
 const table = ref(null);
 
 const tabulator = ref(null);
-
-const tableData = computed(() => {
-    return users;
-});
+const usersURI = "/users/paginated";
 onMounted(() => {
     //instantiate Tabulator when element is mounted
     tabulator.value = new Tabulator(table.value, {
-        data: tableData.value, //link data to table
-        reactiveData: true, //enable data reactivity
-        layout: "fitDataFill",
+        ajaxFiltering: true,
+        filterMode: "remote",
+        layout: "fitColumns",
+        paginationSize: 10, //allow 10 rows per page of data
+        paginationCounter: "rows", //display count of paginated rows in footer
+        movableColumns: true, //allow column order to be changed
+        pagination: true, //enable pagination
+        paginationMode: "remote", //enable remote pagination
+        ajaxURL: usersURI, //set url for ajax request
+        paginationSize: 10, //optional parameter to request a certain number of rows per page
+        paginationSizeSelector: [10, 20, 50, 100],
         columns: [
-            {
-                // Index column
-                title: "#",
-                field: "index",
-                formatter: "rownum",
-                widthShrink: true,
-                hozAlign: "center",
-                headerSort: false,
-                cssClass: "tabulator-index-column",
-            },
+            // {
+            //     // Index column
+            //     title: "#",
+            //     field: "index",
+            //     formatter: "rownum",
+            //     widthShrink: true,
+            //     hozAlign: "center",
+            //     headerSort: false,
+            //     cssClass: "tabulator-index-column",
+            // },
             {
                 title: "Name",
                 field: "name",
@@ -121,6 +148,7 @@ onMounted(() => {
 
                     if (cell.getRow().getData().id === auth.user.id) {
                         nameEl.classList.add("font-bold");
+                        nameEl.textContent += " (you)";
                     }
                     divEl.appendChild(nameEl);
                     return divEl;
@@ -143,9 +171,12 @@ onMounted(() => {
                 formatter: function (cell) {
                     return createActionBtns(auth.user, cell.getRow().getData());
                 },
+                headerSort: false,
             },
         ], //define table columns
     });
+    // // Reset search input when page size changes
+    // tabulator.value.on("pageSizeChanged", () => (searchTerm.value = ""));
 });
 
 const createActionBtns = (authUser, cellUser) => {
@@ -204,8 +235,22 @@ const createActionBtns = (authUser, cellUser) => {
 
     <div>
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
-            <div class="flex flex-col py-12 max-w-6xl mx-auto">
-                <div class="flex flex-col py-12 max-w-6xl">
+            <div class="flex flex-col py-12 max-w-6xl mx-auto px-4">
+                <div class="flex flex-col py-12 w-full">
+                    <div class="p-4 flex justify-between items-center">
+                        <h1
+                            class="mb-4 text-3xl font-bold leading-none tracking-tight text-gray-900"
+                        >
+                            Users
+                        </h1>
+                        <TextInput
+                            type="search"
+                            class="ml-1 inline-flex placeholder:text-sm"
+                            autocomplete="searchname"
+                            placeholder="Type to search by name..."
+                            v-model="searchTerm"
+                        />
+                    </div>
                     <div ref="table" id="users-table"></div>
                 </div>
                 <!-- <div class="overflow-x-auto">
@@ -556,8 +601,8 @@ $borderColor: transparent;
     // @apply w-full;
     @apply rounded;
     @apply bg-transparent;
-    height: 1000px;
-    // @apply w-full;
+    // height: 1000px;
+    @apply w-full;
     @apply text-gray-500;
     @apply mx-auto;
     .tabulator-table {
@@ -602,6 +647,9 @@ $borderColor: transparent;
     }
     .tabulator-name-column {
         @apply text-gray-900;
+    }
+    .tabulator-footer .tabulator-page-size {
+        padding-right: 2.5rem;
     }
 }
 </style>
