@@ -171,11 +171,12 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Requset $request, Product $product)
+    public function edit(Product $product)
     {
-        if ($request->cannot('edit', $product)) {
-            abort(404);
-        }
+        // if ($request->cannot('edit', $product)) {
+        //     abort(404);
+        // }
+        dd($product);
 
         return Inertia::render('Product/Edit');
     }

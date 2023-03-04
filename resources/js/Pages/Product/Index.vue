@@ -37,7 +37,7 @@ onMounted(() => {
         ajaxFiltering: true,
         filterMode: "remote",
         layout: "fitColumns",
-        minHeight: 300,
+        minHeight: 150,
         paginationSize: 10, //allow 10 rows per page of data
         paginationCounter: "rows", //display count of paginated rows in footer
         movableColumns: true, //allow column order to be changed
