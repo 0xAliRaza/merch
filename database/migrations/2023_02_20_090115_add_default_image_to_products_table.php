@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::table('products', function (Blueprint $table) {
             $table->unsignedBigInteger('default_image')->nullable();
-            $table->foreign('default_image')->references('id')->on('product_images');
+            $table->foreign('default_image')->references('id')->on('product_images')->onDelete('set null');
         });
     }
 

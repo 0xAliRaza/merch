@@ -200,6 +200,9 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        //
+        // TODO: Delete the associated files
+        // dd($product->defaultImage->delete());
+        $product->deleteOrFail();
+        return to_route('products.index');
     }
 }

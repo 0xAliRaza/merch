@@ -98,13 +98,19 @@ onMounted(() => {
                     return `<span title="${date.toString()}">${date.toLocaleDateString()}</span>`;
                 },
             },
+            {
+                title: "Actions",
+                formatter: function (cell) {
+                    return createActionBtns(cell.getRow().getData()["id"]);
+                },
+            },
         ], //define table columns
     });
     // // Reset search input when page size changes
     // tabulator.value.on("pageSizeChanged", () => (searchTerm.value = ""));
 });
 
-const createActionBtns = (authUser, cellUser) => {
+const createActionBtns = (id) => {
     // create the container div
     const container = document.createElement("div");
 
@@ -123,9 +129,10 @@ const createActionBtns = (authUser, cellUser) => {
         "disabled:opacity-50"
     );
     editBtn.innerText = "Edit";
-    editBtn.disabled =
-        authUser.role !== "superadmin" && cellUser.id !== authUser.id;
-    editBtn.addEventListener("click", () => editUser(cellUser));
+
+    editBtn.addEventListener("click", () =>
+        router.visit(route("products.edit", { product: id }))
+    );
     // create the second button
     const deleteBtn = document.createElement("button");
     deleteBtn.type = "button";
@@ -142,9 +149,7 @@ const createActionBtns = (authUser, cellUser) => {
         "ml-2"
     );
     deleteBtn.innerText = "Delete";
-    deleteBtn.disabled =
-        authUser.role !== "superadmin" && cellUser.id !== authUser.id;
-    deleteBtn.addEventListener("click", () => deleteUser(cellUser));
+    deleteBtn.addEventListener("click", () => deleteProduct(id));
 
     // append the buttons to the container div
     container.appendChild(editBtn);
@@ -152,6 +157,15 @@ const createActionBtns = (authUser, cellUser) => {
 
     // return the container div
     return container;
+};
+
+const deleteProduct = (product) => {
+    router.delete(route("products.destroy", { product }), {
+        only: ["errors"],
+        onBefore: () =>
+            confirm("Are you sure you want to delete this product?"),
+        onSuccess: () => tabulator.value.setPage(1),
+    });
 };
 </script>
 
