@@ -18,7 +18,7 @@ class ProductPolicy
      */
     public function viewAny(User $user)
     {
-        //
+        return $user->isSuperAdmin() || $user->isAdmin();
     }
 
     /**

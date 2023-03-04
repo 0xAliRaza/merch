@@ -7,6 +7,7 @@ import NavLink from "@/Components/NavLink.vue";
 import SidebarNavLink from "@/Components/SidebarNavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link } from "@inertiajs/vue3";
+import SidebarNavMenu from "@/Components/SidebarNavMenu.vue";
 
 const showingNavigationDropdown = ref(false);
 </script>
@@ -14,14 +15,50 @@ const showingNavigationDropdown = ref(false);
 <template>
     <div>
         <div class="h-screen flex flex-row bg-gray-100 dark:bg-gray-900">
-            <div class="sidebar min-h-screen max-w-[15rem] p-4 bg-white border">
-                <aside class="bg-white">
-                    <div class="flex w-full">
-                        <SidebarNavLink href="/" class="w-full"> Home </SidebarNavLink>
-                    </div>
+            <div class="sidebar h-screen w-full max-w-[15rem] bg-white">
+                <aside class="bg-white w-full flex flex-col h-full">
+                    <header
+                        class="h-16 flex p-4 justify-center items-center font-extrabold text-gray-600"
+                    >
+                        Merch
+                    </header>
+                    <nav
+                        class="flex flex-col items-stretch justify-start border-r border-gray-100 flex-1"
+                    >
+                        <SidebarNavLink
+                            :href="route('dashboard')"
+                            :active="route().current('dashboard')"
+                            class="w-full"
+                        >
+                            Home
+                        </SidebarNavLink>
+                        <SidebarNavLink
+                            :href="route('users.index')"
+                            :active="route().current('users.index')"
+                            class="w-full"
+                        >
+                            Users
+                        </SidebarNavLink>
+                        <SidebarNavMenu>
+                            <template #parent>
+                                <SidebarNavLink
+                                    :href="route('products.index')"
+                                    :active="route().current('products.index')"
+                                    >Products</SidebarNavLink
+                                >
+                            </template>
+                            <template #children>
+                                <SidebarNavLink
+                                    :href="'/products/create'"
+                                    :active="route().current('products.create')"
+                                    >Create</SidebarNavLink
+                                >
+                            </template>
+                        </SidebarNavMenu>
+                    </nav>
                 </aside>
             </div>
-            <div class="main flex-1">
+            <div class="main flex-1 overflow-y-auto">
                 <nav
                     class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700"
                 >

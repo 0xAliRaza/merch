@@ -40,7 +40,10 @@ Route::post('/users/store', [ManageUsersController::class, 'store'])->middleware
 Route::patch('/users/{user}', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
 Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->middleware(['auth', 'verified'])->name('users.destroy');
 // Products
+Route::get('/products', [ProductController::class, 'index'])->middleware(['auth', 'verified'])->name('products.index');
+Route::get('/products/paginated', [ProductController::class, 'getPaginated'])->middleware(['auth', 'verified'])->name('products.paginated');
 Route::get('/products/create', [ProductController::class, 'create'])->middleware(['auth', 'verified'])->name('products.create');
+Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->middleware(['auth', 'verified'])->name('products.edit');
 Route::post('/products/store', [ProductController::class, 'store'])->middleware(['auth', 'verified'])->name('products.store');
 Route::post('/products/image-upload', [ProductController::class, 'imageUpload'])->middleware(['auth', 'verified'])->name('products.imageUpload');
 Route::delete('/products/image/{image}', [ProductController::class, 'imageDelete'])->middleware(['auth', 'verified'])

@@ -17,13 +17,46 @@ use App\Http\Requests\StoreProductImageRequest;
 class ProductController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Render the index page.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        if ($request->user()->cannot('viewAny', Product::class)) {
+            abort(404);
+        }
+        return Inertia::render('Product/Index');
+    }
+
+    /**
+     * Get filtered paginated products.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function getPaginated(Request $request)
+    {
+        if ($request->user()->cannot('viewAny', Product::class)) {
+            abort(404);
+        }
+        $request->validate([
+            'page' => 'nullable|integer|min:1',
+            'size' => 'nullable|integer|min:1|max:100',
+            'filter' => 'nullable|array|max:1', // Only supporting 1 filter
+            'filter.*.field' => 'required|string|max:255',
+            'filter.*.type' => 'required|string|max:255',
+            'filter.*.value' => 'required|string|max:255',
+        ]);
+        $filter = $request->input('filter.0');
+        $size = $request->input('size', 15);
+
+        $products = Product::query();
+
+        if ($filter && $filter['type'] === 'like' && $filter['field'] === 'name') {
+            $products = $products->where('name', 'LIKE', '%' . $filter['value'] . '%');
+        }
+
+        return $products->with('defaultImage')->latest()->paginate($size, ['*']);
     }
 
     /**
@@ -138,9 +171,13 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit(Requset $request, Product $product)
     {
-        //
+        if ($request->cannot('edit', $product)) {
+            abort(404);
+        }
+
+        return Inertia::render('Product/Edit');
     }
 
     /**
