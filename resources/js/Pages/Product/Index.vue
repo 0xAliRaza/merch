@@ -37,7 +37,9 @@ onMounted(() => {
         ajaxFiltering: true,
         filterMode: "remote",
         layout: "fitColumns",
+
         minHeight: 150,
+        variableHeight: true,
         paginationSize: 10, //allow 10 rows per page of data
         paginationCounter: "rows", //display count of paginated rows in footer
         movableColumns: true, //allow column order to be changed
@@ -46,12 +48,24 @@ onMounted(() => {
         ajaxURL: usersURI, //set url for ajax request
         paginationSize: 10, //optional parameter to request a certain number of rows per page
         paginationSizeSelector: [10, 20, 50, 100],
+        layoutColumnsOnNewData: true,
         columns: [
             {
                 field: "default_image.small",
-                formatter: "image",
+                urlPrefix: "http://localhost/storage/images/",
+                formatter: function (cell, formatterParams, onRendered) {
+                    const imgEl = document.createElement("img");
+                    imgEl.setAttribute(
+                        "src",
+                        `/storage/images/${cell.getValue()}`
+                    );
+                    imgEl.addEventListener("load", function () {
+                        cell.getRow().normalizeHeight();
+                    });
+                    return imgEl;
+                },
                 headerSort: false,
-                maxWidth: 150,
+                width: 150,
             },
             {
                 title: "Name",
@@ -200,7 +214,7 @@ $borderColor: transparent;
 @import "tabulator-tables/src/scss/themes/tabulator_simple.scss";
 
 .tabulator#products-table {
-    // @apply w-full;
+    @apply w-full;
     @apply rounded;
     @apply bg-transparent;
     // height: 1000px;

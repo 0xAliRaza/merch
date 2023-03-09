@@ -93,7 +93,7 @@ class ProductController extends Controller
             abort(404);
         }
         Storage::disk('temporary')->delete($image);
-        return to_route('dashboard');
+        return back();
     }
 
     /**
@@ -138,7 +138,7 @@ class ProductController extends Controller
                 Storage::disk('images')->makeDirectory($widthName);
 
                 $resizedImage->save($resizedImagePath);
-                $productImage->setAttribute($widthName, Storage::disk('images')->url("{$widthName}/{$originalImageName}"));
+                $productImage->setAttribute($widthName, "{$widthName}/{$originalImageName}");
             }
 
             // Delete the original image from the "temporary" disk
@@ -171,14 +171,14 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function edit(Product $product)
+    public function edit(Product $product, Request $request)
     {
-        // if ($request->cannot('edit', $product)) {
-        //     abort(404);
-        // }
-        dd($product);
+        if ($request->user()->cannot('update', $product)) {
+            abort(404);
+        }
+        $product->images;
 
-        return Inertia::render('Product/Edit');
+        return Inertia::render('Product/Edit', compact('product'));
     }
 
     /**

@@ -9,13 +9,30 @@ import Dropzone from "dropzone";
 import "dropzone/dist/dropzone.css";
 import AdminLayout from "@/Layouts/AdminLayout.vue";
 
+const props = defineProps({
+    product: Object,
+    required: true,
+});
+
+let form = useForm({
+    name: props.product.name,
+    description: props.product.description,
+    price: props.product.price,
+    discount: props.product.discount,
+    images: [],
+    removedImages: [],
+    default_image_index: null, // index of default image im images array
+});
 const dropzoneRef = ref(null);
 
 onMounted(() => {
+    console.log(props.product);
+
     const csrfToken = document.head.querySelector(
         'meta[name="csrf-token"]'
     ).content;
 
+    // Dropzone instance
     const dropzone = new Dropzone(dropzoneRef.value, {
         url: route("products.imageUpload"),
         method: "post",
@@ -27,6 +44,23 @@ onMounted(() => {
         acceptedFiles: "image/png,image/jpeg,image/jpg",
         maxFiles: 5,
     });
+
+    // Add existing product images to dropzone
+    props.product?.images.forEach((img, index) => {
+        const mockFile = { name: img.original?.split("/").pop(), id: img.id };
+        // debugger;
+        dropzone.displayExistingFile(
+            mockFile,
+            "http://localhost/storage/images/" + img.small,
+            // Remove size span because it's undefined
+            () =>
+                (mockFile.previewElement.querySelector(".dz-size").innerHTML =
+                    "")
+        );
+
+        form.images.push({ id: img.id });
+    });
+
     dropzone.on("success", (file, response) => {
         file.filename = response.filename;
         form.images.push(response.filename);
@@ -41,6 +75,8 @@ onMounted(() => {
     dropzone.on("removedfile", (file) => {
         if (file.status === "success" && file.filename) {
             router.delete(`/products/image/${file.filename}`);
+        } else if (file.id) {
+            form.removedImages.push({ id: file.id });
         }
     });
     const resetDefaultImageBtn = () => {
@@ -78,14 +114,6 @@ onMounted(() => {
         form.errors.images["imageUploadError"] = err;
         dropzone.removeFile(file);
     });
-});
-let form = useForm({
-    name: "",
-    description: "",
-    price: null,
-    discount: null,
-    images: [],
-    default_image_index: null, // index of default image im images array
 });
 
 const onFormSubmit = () => {

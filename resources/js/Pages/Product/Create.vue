@@ -40,7 +40,18 @@ onMounted(() => {
     });
     dropzone.on("removedfile", (file) => {
         if (file.status === "success" && file.filename) {
+            // Remove file from server
             router.delete(`/products/image/${file.filename}`);
+            // Remove file from reactive form
+            const imgIndex = form.images.findIndex(
+                (img) => img === file.filename
+            );
+            if (imgIndex !== -1) {
+                form.images.splice(imgIndex, 1);
+                if (form.default_image_index === imgIndex) {
+                    form.default_image_index = null;
+                }
+            }
         }
     });
     const resetDefaultImageBtn = () => {
