@@ -232,11 +232,11 @@ class ProductController extends Controller
             }
             $product->images()->saveMany($newImageModels);
             $defaultImageIndex = $validated['default_image_index'];
-            if (!empty($defaultImageIndex)) {
+            if (is_numeric($defaultImageIndex)) {
                 $product->defaultImage()->associate($newImageModels[$defaultImageIndex]);
             }
         }
-        if (!empty($validated['default_image'])) {
+        if ($validated['default_image']) {
             $product->default_image = $validated['default_image'];
         }
 
