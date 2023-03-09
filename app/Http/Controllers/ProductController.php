@@ -163,7 +163,7 @@ class ProductController extends Controller
         $product->images()->saveMany($productImages);
         $product->default_image =  $productImages[$request->input('default_image_index')]->id;
         $product->save();
-        return to_route('dashboard');
+        return to_route('products.index');
     }
 
     /**
@@ -213,13 +213,9 @@ class ProductController extends Controller
             // Permanently delete image models and all the files associated with them
             $query = ProductImage::whereIn('id', $removedImages)->where('product_id', $product->id);
 
-            // Get a flat array containing all the file paths
-            $imagesToDelete = $query->get()->flatMap(function ($model) {
-                return [$model->small, $model->medium, $model->large, $model->original];
-            })->filter()->all();
 
-            // Delete all the files from storage
-            Storage::disk('images')->delete($imagesToDelete);
+            // Delete all the product images related files from storage
+            $this->deleteProductImageFiles($query->get());
 
             // Delete all the models from the db
             $query->delete();
@@ -237,7 +233,7 @@ class ProductController extends Controller
             $product->images()->saveMany($newImageModels);
             $defaultImageIndex = $validated['default_image_index'];
             if (!empty($defaultImageIndex)) {
-                $product->defaultImage()->save($newImageModels[$defaultImageIndex]);
+                $product->defaultImage()->associate($newImageModels[$defaultImageIndex]);
             }
         }
         if (!empty($validated['default_image'])) {
@@ -256,9 +252,27 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // TODO: Delete the associated files
-        // dd($product->defaultImage->delete());
+        // Delete all the product images related files from storage
+        $this->deleteProductImageFiles($product->images);
         $product->deleteOrFail();
         return to_route('products.index');
+    }
+
+    /**
+     * Delete all image files associated with a product image collection.
+     *
+     * @param \Illuminate\Support\Collection $collection The collection of product images to delete files for.
+     * @return void
+     */
+    protected function deleteProductImageFiles($collection)
+    {
+
+        // Get a flat array containing all the file paths
+        $imagesToDelete = $collection->flatMap(function ($model) {
+            return [$model->small, $model->medium, $model->large, $model->original];
+        })->filter()->all();
+
+        // Delete all the files from storage
+        Storage::disk('images')->delete($imagesToDelete);
     }
 }
