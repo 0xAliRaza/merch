@@ -44,6 +44,7 @@ Route::get('/products', [ProductController::class, 'index'])->middleware(['auth'
 Route::get('/products/paginated', [ProductController::class, 'getPaginated'])->middleware(['auth', 'verified'])->name('products.paginated');
 Route::get('/products/create', [ProductController::class, 'create'])->middleware(['auth', 'verified'])->name('products.create');
 Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->middleware(['auth', 'verified'])->name('products.edit');
+Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware(['auth', 'verified'])->name('products.update');
 Route::delete('/products/{product}', [ProductController::class, 'destroy'])->middleware(['auth', 'verified'])->name('products.destroy');
 Route::post('/products/store', [ProductController::class, 'store'])->middleware(['auth', 'verified'])->name('products.store');
 Route::post('/products/image-upload', [ProductController::class, 'imageUpload'])->middleware(['auth', 'verified'])->name('products.imageUpload');

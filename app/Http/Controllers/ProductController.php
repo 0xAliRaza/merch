@@ -96,6 +96,52 @@ class ProductController extends Controller
         return back();
     }
 
+
+
+    /**
+     * @param string $imageName
+     * @return ProductImage
+     */
+    protected function generateProductImage($imageName): ProductImage
+    {
+        $productImage = new ProductImage();
+        $fileContents = Storage::disk('temporary')->get($imageName);
+        Storage::disk('images')->put($imageName, $fileContents);
+
+        $productImage->original = $imageName;
+
+        // Create an intervention/image instance for the original image
+        $image = Image::make($fileContents);
+
+        // Define the target widths for the resized images
+        $targetWidths = ['small' => 480, 'medium' => 800, 'large' => 1200];
+
+        // Loop through the target widths and resize the image for each width
+        foreach ($targetWidths as $widthName => $width) {
+
+            $resizedImage = clone $image;
+            $resizedImage->resize($width, null, function ($constraint) {
+                $constraint->aspectRatio();
+                $constraint->upsize();
+            });
+            // Save the resized image to the "images" disk
+            $resizedImagePath = Storage::disk('images')->path("{$widthName}/{$imageName}");
+
+            // Create the directory if it does not exist
+            Storage::disk('images')->makeDirectory($widthName);
+
+            $resizedImage->save($resizedImagePath);
+            $productImage->setAttribute($widthName, "{$widthName}/{$imageName}");
+        }
+
+        // Delete the original image from the "temporary" disk
+        Storage::disk('temporary')->delete($imageName);
+
+        return $productImage;
+    }
+
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -111,41 +157,7 @@ class ProductController extends Controller
 
 
         foreach ($validated['images'] as $originalImageName) {
-            $productImage = new ProductImage();
-            $fileContents = Storage::disk('temporary')->get($originalImageName);
-            Storage::disk('images')->put($originalImageName, $fileContents);
-
-            $productImage->original = Storage::disk("images")->url($originalImageName);
-
-            // Create an intervention/image instance for the original image
-            $image = Image::make($fileContents);
-
-            // Define the target widths for the resized images
-            $targetWidths = ['small' => 480, 'medium' => 800, 'large' => 1200];
-
-            // Loop through the target widths and resize the image for each width
-            foreach ($targetWidths as $widthName => $width) {
-
-                $resizedImage = clone $image;
-                $resizedImage->resize($width, null, function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                });
-                // Save the resized image to the "images" disk
-                $resizedImagePath = Storage::disk('images')->path("{$widthName}/{$originalImageName}");
-
-                // Create the directory if it does not exist
-                Storage::disk('images')->makeDirectory($widthName);
-
-                $resizedImage->save($resizedImagePath);
-                $productImage->setAttribute($widthName, "{$widthName}/{$originalImageName}");
-            }
-
-            // Delete the original image from the "temporary" disk
-            Storage::disk('temporary')->delete($originalImageName);
-
-            // Push the new model to array
-            array_push($productImages, $productImage);
+            array_push($productImages, $this->generateProductImage($originalImageName));
         }
         $product = Product::create($validated);
         $product->images()->saveMany($productImages);
@@ -177,6 +189,7 @@ class ProductController extends Controller
             abort(404);
         }
         $product->images;
+        $product->defaultImage;
 
         return Inertia::render('Product/Edit', compact('product'));
     }
@@ -190,7 +203,49 @@ class ProductController extends Controller
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
-        //
+        $validated = $request->validated();
+
+        // IDs of images to be removed
+        $removedImages = $validated['removed_images'];
+        $product->fill($validated);
+
+        if (!empty($removedImages)) {
+            // Permanently delete image models and all the files associated with them
+            $query = ProductImage::whereIn('id', $removedImages)->where('product_id', $product->id);
+
+            // Get a flat array containing all the file paths
+            $imagesToDelete = $query->get()->flatMap(function ($model) {
+                return [$model->small, $model->medium, $model->large, $model->original];
+            })->filter()->all();
+
+            // Delete all the files from storage
+            Storage::disk('images')->delete($imagesToDelete);
+
+            // Delete all the models from the db
+            $query->delete();
+        }
+
+
+        // Filenames of temp uploaded product images
+        $newImages = $validated['new_images'];
+
+        if (!empty($newImages)) {
+            $newImageModels = [];
+            foreach ($newImages as $filename) {
+                array_push($newImageModels, $this->generateProductImage($filename));
+            }
+            $product->images()->saveMany($newImageModels);
+            $defaultImageIndex = $validated['default_image_index'];
+            if (!empty($defaultImageIndex)) {
+                $product->defaultImage()->save($newImageModels[$defaultImageIndex]);
+            }
+        }
+        if (!empty($validated['default_image'])) {
+            $product->default_image = $validated['default_image'];
+        }
+
+        $product->save();
+        return to_route('products.index');
     }
 
     /**

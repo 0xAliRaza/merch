@@ -19,15 +19,15 @@ let form = useForm({
     description: props.product.description,
     price: props.product.price,
     discount: props.product.discount,
-    images: [],
-    removedImages: [],
-    default_image_index: null, // index of default image im images array
+    new_images: [],
+    removed_images: [],
+    default_image: props.product.default_image.id,
+    default_image_index: null,
+    // index of default image in new_images
 });
 const dropzoneRef = ref(null);
 
 onMounted(() => {
-    console.log(props.product);
-
     const csrfToken = document.head.querySelector(
         'meta[name="csrf-token"]'
     ).content;
@@ -47,36 +47,55 @@ onMounted(() => {
 
     // Add existing product images to dropzone
     props.product?.images.forEach((img, index) => {
-        const mockFile = { name: img.original?.split("/").pop(), id: img.id };
-        // debugger;
+        const mockFile = {
+            // Get the filename with extension from URI
+            name: img.original?.split("/").pop(),
+            id: img.id,
+            accepted: true,
+        };
+
+        dropzone.files.push(mockFile);
+        // Display the thumbnail in dropzone div
         dropzone.displayExistingFile(
             mockFile,
             "http://localhost/storage/images/" + img.small,
-            // Remove size span because it's undefined
+            // Remove size span because it's unknown-
             () =>
                 (mockFile.previewElement.querySelector(".dz-size").innerHTML =
                     "")
         );
-
-        form.images.push({ id: img.id });
     });
 
     dropzone.on("success", (file, response) => {
         file.filename = response.filename;
-        form.images.push(response.filename);
-        if (form.images.length === 1) {
-            form.default_image_index = 0;
-            const btn = document.querySelector(".set-default-image-btn");
-            btn.innerHTML = "default";
-            btn.setAttribute("disabled", true);
-        }
+        form.new_images.push(response.filename);
+
         form.errors.images = {};
     });
     dropzone.on("removedfile", (file) => {
-        if (file.status === "success" && file.filename) {
+        if (file.filename && file.status === "success") {
+            // Remove temporarily uploaded file from server
             router.delete(`/products/image/${file.filename}`);
+            const imgIndex = form.new_images.findIndex(
+                (img) => img === file.filename
+            );
+
+            if (imgIndex !== -1) {
+                // Remove it from reactive form
+                form.new_images.splice(imgIndex, 1);
+                if (form.default_image_index === imgIndex) {
+                    // Reset default image if removed image was default
+                    form.default_image_index = null;
+                    resetDefaultImageBtn();
+                }
+            }
         } else if (file.id) {
-            form.removedImages.push({ id: file.id });
+            // Remove existing image
+            form.removed_images.push(file.id);
+            if (form.default_image === file.id) {
+                // Reset default image
+                form.default_image = null;
+            }
         }
     });
     const resetDefaultImageBtn = () => {
@@ -90,17 +109,27 @@ onMounted(() => {
             '<button type="button" class="set-default-image-btn !cursor-pointer text-emerald-500 text-white text-xs font-bold px-2 py-1 rounded uppercase w-full disabled:opacity-50 hover:underline disabled:pointer-events-none">Set as default</button>'
         );
         setDefaultButton.addEventListener("click", (event) => {
-            // debugger;
+            resetDefaultImageBtn();
+            form.default_image = null;
+            form.default_image_index = null;
             if (file.status === "success") {
-                const imgIndex = form.images.findIndex(
+                const imgIndex = form.new_images.findIndex(
                     (val) => file.filename === val
                 );
-                resetDefaultImageBtn();
-                form.default_image_index = imgIndex;
-                event.target.innerText = "Default";
-                event.target.setAttribute("disabled", true);
+                if (imgIndex !== -1) {
+                    form.default_image_index = imgIndex;
+                }
+            } else if (file.id) {
+                form.default_image = file.id;
             }
+            event.target.innerText = "Default";
+            event.target.setAttribute("disabled", true);
         });
+
+        if (file.id === form.default_image) {
+            setDefaultButton.innerText = "Default";
+            setDefaultButton.setAttribute("disabled", true);
+        }
         file.previewElement.appendChild(setDefaultButton);
     });
 
@@ -117,7 +146,7 @@ onMounted(() => {
 });
 
 const onFormSubmit = () => {
-    form.post(route("products.store"), {
+    form.patch(route("products.update", props.product.id), {
         onSuccess: () => form.reset(),
         onError: (errors) => {
             form.errors.images = {};
@@ -129,8 +158,10 @@ const onFormSubmit = () => {
                 }
             }
             if (errors.default_image_index) {
-                form.errors.images["default_image_index"] =
+                form.errors.images["default_image"] =
                     errors.default_image_index;
+            } else if (errors.default_image) {
+                form.errors.images["default_image"] = errors.default_image;
             }
         },
         preserveScroll: true,
@@ -142,7 +173,6 @@ const onFormSubmit = () => {
     <Head title="Dashboard" />
 
     <AdminLayout>
-        <!-- <div class="min-h-screen bg-gray-100 dark:bg-gray-900"> -->
         <div class="py-8 max-w-md mx-auto">
             <form @submit.prevent="onFormSubmit">
                 <div>
@@ -243,6 +273,5 @@ const onFormSubmit = () => {
                 </div>
             </form>
         </div>
-        <!-- </div> -->
     </AdminLayout>
 </template>
