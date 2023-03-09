@@ -250,8 +250,12 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy(Product $product, Request $request)
     {
+        if($request->user()->cannot('delete', $product)) {
+            abort(404);
+        }
+
         // Delete all the product images related files from storage
         $this->deleteProductImageFiles($product->images);
         $product->deleteOrFail();
@@ -266,6 +270,7 @@ class ProductController extends Controller
      */
     protected function deleteProductImageFiles($collection)
     {
+        
 
         // Get a flat array containing all the file paths
         $imagesToDelete = $collection->flatMap(function ($model) {
