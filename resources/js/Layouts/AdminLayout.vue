@@ -15,15 +15,17 @@ const showingNavigationDropdown = ref(false);
 <template>
     <div>
         <div class="h-screen flex flex-row bg-gray-100 dark:bg-gray-900">
-            <div class="sidebar h-screen w-full max-w-[15rem] bg-white">
-                <aside class="bg-white w-full flex flex-col h-full">
+            <div class="sidebar h-screen w-full max-w-[15rem]">
+                <aside
+                    class="bg-gray-200 dark:bg-gray-800 w-full flex flex-col h-full border-gray-200 border-r"
+                >
                     <header
                         class="h-16 flex p-4 justify-center items-center font-extrabold text-gray-600"
                     >
                         Merch
                     </header>
                     <nav
-                        class="flex flex-col items-stretch justify-start border-r border-gray-100 flex-1"
+                        class="flex flex-col items-stretch justify-start flex-1"
                     >
                         <SidebarNavLink
                             :href="route('dashboard')"
@@ -44,8 +46,9 @@ const showingNavigationDropdown = ref(false);
                                 <SidebarNavLink
                                     :href="route('products.index')"
                                     :active="route().current('products.index')"
-                                    >Products</SidebarNavLink
-                                >
+                                    >Products
+                                    <slot name="icon"> </slot>
+                                </SidebarNavLink>
                             </template>
                             <template #children>
                                 <SidebarNavLink
@@ -60,7 +63,7 @@ const showingNavigationDropdown = ref(false);
             </div>
             <div class="main flex-1 overflow-y-auto">
                 <nav
-                    class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700"
+                    class="bg-gray-200 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700"
                 >
                     <!-- Primary Navigation Menu -->
                     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
