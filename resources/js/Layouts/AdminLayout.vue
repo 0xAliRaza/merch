@@ -20,9 +20,9 @@ const showingNavigationDropdown = ref(false);
                     class="bg-gray-200 dark:bg-gray-800 w-full flex flex-col h-full border-gray-200 border-r"
                 >
                     <header
-                        class="h-16 flex p-4 justify-center items-center font-extrabold text-gray-600"
+                        class="h-16 flex p-4 justify-center items-center font-extrabold text-indigo-600 hover:text-indigo-800"
                     >
-                        Merch
+                    <Link href="/">Merch</Link>
                     </header>
                     <nav
                         class="flex flex-col items-stretch justify-start flex-1"

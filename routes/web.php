@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\ManageUsersController;
+use App\Http\Controllers\HomeController;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\ManageUsersController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,18 +19,23 @@ use Inertia\Inertia;
 |
 */
 
-Route::get('/', function () {
-    return redirect('/users');
-    return Inertia::render('Home', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
-// Route::get('/youtube', function () {
-//     return Inertia::render('Youtube');
+// Route::get('/', function () {
+//     return redirect('/users');
+//     return Inertia::render('Home', [
+//         'canLogin' => Route::has('login'),
+//         'canRegister' => Route::has('register'),
+//         'laravelVersion' => Application::VERSION,
+//         'phpVersion' => PHP_VERSION,
+//     ]);
 // });
+
+
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+Route::get('/product/{id}', function () {
+    return 'working';
+});
+
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');

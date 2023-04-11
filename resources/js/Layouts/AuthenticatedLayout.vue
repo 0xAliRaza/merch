@@ -12,7 +12,6 @@ const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
-    <div>
         <div class="h-screen flex flex-row bg-gray-100 dark:bg-gray-900">
             <div class="sidebar min-h-screen max-w-[15rem] p-4 bg-white border">
                 <aside class="bg-white">
@@ -211,5 +210,4 @@ const showingNavigationDropdown = ref(false);
                 </main>
             </div>
         </div>
-    </div>
 </template>
