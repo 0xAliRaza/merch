@@ -31,10 +31,11 @@ use App\Http\Controllers\ManageUsersController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/product/{product}', [HomeController::class, 'renderProduct'])->name('product');
 
-Route::get('/product/{id}', function () {
-    return 'working';
-});
+// Route::get('/product/{id}', function () {
+//     return 'working';
+// });
 
 
 Route::get('/dashboard', function () {

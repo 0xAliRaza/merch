@@ -15,4 +15,10 @@ class HomeController extends Controller
 
         return Inertia::render('Home', compact('products'));
     }
+
+    function renderProduct(Product $product) {
+        $product->defaultImage;
+        // dd($product->toArray());
+        return Inertia::render('Product', compact('product'));
+    }
 }
