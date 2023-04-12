@@ -11,14 +11,14 @@ class HomeController extends Controller
 {
     function index(Request $request)
     {
-        $products = Product::latest()->with(['defaultImage'])->get();
+        $products = Product::latest()->get();
 
         return Inertia::render('Home', compact('products'));
     }
 
-    function renderProduct(Product $product) {
-        $product->defaultImage;
-        // dd($product->toArray());
+    function renderProduct(Product $product)
+    {
+        $product->images;
         return Inertia::render('Product', compact('product'));
     }
 }
