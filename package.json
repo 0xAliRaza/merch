@@ -1,7 +1,7 @@
 {
     "private": true,
     "scripts": {
-        "dev": "vite",
+        "dev": "vite --host 0.0.0.0",
         "build": "vite build && vite build --ssr"
     },
     "devDependencies": {
@@ -25,3 +25,4 @@
         "tabulator-tables": "^5.4.4"
     }
 }
+
