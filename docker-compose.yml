@@ -27,6 +27,7 @@ services:
             - redis
             - mysql
             - mailhog
+            - phpmyadmin
         networks:
             - merch
 

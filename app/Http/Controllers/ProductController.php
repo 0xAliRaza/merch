@@ -56,7 +56,7 @@ class ProductController extends Controller
             $products = $products->where('name', 'LIKE', '%' . $filter['value'] . '%');
         }
 
-        return $products->with('defaultImage')->latest()->paginate($size, ['*']);
+        return $products->with('default_image')->latest()->paginate($size, ['*']);
     }
 
     /**
