@@ -50,11 +50,10 @@ class ProductImageFactory extends Factory
         $medium = fake()->image(storage_path('app/public/images') . '/medium', 800, 800, null, false);
         $large = fake()->image(storage_path('app/public/images') . '/large', 1200, 1200, null, false);
         $original = fake()->image(storage_path('app/public/images'), 1920, 1080, null, false);
-
         return [
-            'small' => $small,
-            'medium' => $medium,
-            'large' => $large,
+            'small' => 'small/' . $small,
+            'medium' => 'medium/' . $medium,
+            'large' => 'large/' . $large,
             'original' => $original,
         ];
     }

@@ -57,7 +57,7 @@ onMounted(() => {
                     const imgEl = document.createElement("img");
                     imgEl.setAttribute(
                         "src",
-                        `/storage/images/small/${cell.getValue()}`
+                        `/storage/images/${cell.getValue()}`
                     );
                     imgEl.addEventListener("load", function () {
                         cell.getRow().normalizeHeight();

@@ -252,12 +252,14 @@ class ProductController extends Controller
      */
     public function destroy(Product $product, Request $request)
     {
-        if($request->user()->cannot('delete', $product)) {
+        if ($request->user()->cannot('delete', $product)) {
             abort(404);
         }
 
-        // Delete all the product images related files from storage
+
+        // Delete all the product images related files from storage    
         $this->deleteProductImageFiles($product->images);
+
         $product->deleteOrFail();
         return to_route('products.index');
     }
@@ -270,7 +272,7 @@ class ProductController extends Controller
      */
     protected function deleteProductImageFiles($collection)
     {
-        
+
 
         // Get a flat array containing all the file paths
         $imagesToDelete = $collection->flatMap(function ($model) {
