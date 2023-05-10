@@ -52,7 +52,7 @@ const showingNavigationDropdown = ref(false);
                             </template>
                             <template #children>
                                 <SidebarNavLink
-                                    :href="'/products/create'"
+                                    :href="route('products.create')"
                                     :active="route().current('products.create')"
                                     >Create</SidebarNavLink
                                 >

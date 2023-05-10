@@ -1,16 +1,17 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
-use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rule;
-use Inertia\Response;
 use Inertia\Inertia;
+use Inertia\Response;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Http\RedirectResponse;
+use App\Http\Requests\UpdateUserRequest;
 
 class ManageUsersController extends Controller
 {
@@ -25,7 +26,7 @@ class ManageUsersController extends Controller
             abort(404);
         }
         // $users = User::whereIn('role', ['superadmin', 'admin'])->latest()->get()->toArray();
-        return Inertia::render('Users');
+        return Inertia::render('Admin/Users');
     }
 
 

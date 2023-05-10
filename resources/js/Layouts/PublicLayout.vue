@@ -1,7 +1,6 @@
 <script setup>
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import { Link, router, usePage } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import { Link } from "@inertiajs/vue3";
+import { ref } from "vue";
 import Dropdown from "@/Components/Dropdown.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 
@@ -10,7 +9,6 @@ import NavLink from "@/Components/NavLink.vue";
 const showingNavigationDropdown = ref(false);
 
 const props = defineProps({ cartCount: Number });
-
 </script>
 
 <template>

@@ -123,7 +123,7 @@ onMounted(() => {
         movableColumns: true, //allow column order to be changed
         pagination: true, //enable pagination
         paginationMode: "remote", //enable remote pagination
-        ajaxURL: usersURI, //set url for ajax request
+        ajaxURL: route("users.paginated"), //set url for ajax request
         paginationSize: 10, //optional parameter to request a certain number of rows per page
         paginationSizeSelector: [10, 20, 50, 100],
         columns: [

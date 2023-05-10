@@ -1,6 +1,6 @@
 <script setup>
 import { Head, Link, router, usePage } from "@inertiajs/vue3";
-import GuestLayout from "@/Layouts/GuestLayout.vue";
+import PublicLayout from "@/Layouts/PublicLayout.vue";
 import { onMounted, ref } from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 const props = defineProps({
@@ -44,7 +44,7 @@ onMounted(() => {
 <template>
     <Head :title="`Merch — ${product.name}`" />
 
-    <GuestLayout :cartCount="props.cartCount">
+    <PublicLayout :cartCount="props.cartCount">
         <div class="product max-w-5xl mx-auto p-5 bg-white my-5">
             <div class="flex">
                 <div class="w-full max-w-sm">
@@ -147,5 +147,5 @@ onMounted(() => {
                 {{ product.description }}
             </div>
         </div>
-    </GuestLayout>
+    </PublicLayout>
 </template>

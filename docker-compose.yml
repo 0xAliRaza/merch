@@ -60,6 +60,8 @@ services:
             - "9000:9000"
         volumes:
             - ./:/var/www/html:delegated
+            - ./dockerfiles/php/php.ini:/usr/local/etc/php/conf.d/custom.ini
+
         networks:
             - merch
 

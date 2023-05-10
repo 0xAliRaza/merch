@@ -24,7 +24,7 @@ class StoreProductImageRequest extends FormRequest
     public function rules()
     {
         return [
-            'file' => 'required|image|mimes:jpeg,jpg,png|max:10000|dimensions:min_width=1000,min_height=1000' // max 10000kb & 1000px x 1000px
+            'file' => 'required|image|mimes:jpeg,jpg,png|max:10000|dimensions:min_width=1000,min_height=1000,' // max 10000kb & 1000px x 1000px
         ];
     }
 

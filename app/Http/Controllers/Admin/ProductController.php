@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Cart;
 use Inertia\Inertia;
@@ -8,6 +8,7 @@ use Inertia\Response;
 use App\Models\Product;
 use App\Models\ProductImage;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +28,7 @@ class ProductController extends Controller
         if ($request->user()->cannot('viewAny', Product::class)) {
             abort(404);
         }
-        return Inertia::render('Product/Index');
+        return Inertia::render('Admin/Product/Index');
     }
 
     /**
@@ -70,7 +71,7 @@ class ProductController extends Controller
         if ($request->user()->cannot('create', Product::class)) {
             abort(404);
         }
-        return Inertia::render('Product/Create');
+        return Inertia::render('Admin/Product/Create');
     }
 
     public function imageUpload(StoreProductImageRequest $request)
@@ -158,7 +159,12 @@ class ProductController extends Controller
 
 
         foreach ($validated['images'] as $originalImageName) {
-            array_push($productImages, $this->generateProductImage($originalImageName));
+            try {
+                $generatedProductImg = $this->generateProductImage($originalImageName);
+            } catch (\Exception $e) {
+                return redirect()->back()->withErrors(['product.images', $e]);
+            }
+            array_push($productImages, $generatedProductImg);
         }
         $product = Product::create($validated);
         $product->images()->saveMany($productImages);
@@ -192,7 +198,7 @@ class ProductController extends Controller
         $product->images;
         $product->defaultImage;
 
-        return Inertia::render('Product/Edit', compact('product'));
+        return Inertia::render('Admin/Product/Edit', compact('product'));
     }
 
     /**

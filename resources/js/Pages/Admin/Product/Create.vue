@@ -41,7 +41,7 @@ onMounted(() => {
     dropzone.on("removedfile", (file) => {
         if (file.status === "success" && file.filename) {
             // Remove file from server
-            router.delete(`/products/image/${file.filename}`);
+            router.delete(route("products.imageDelete", file.filename));
             // Remove file from reactive form
             const imgIndex = form.images.findIndex(
                 (img) => img === file.filename
