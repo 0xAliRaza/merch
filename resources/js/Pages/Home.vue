@@ -14,13 +14,13 @@ onMounted(() => {
 <template>
     <Head title="Merch - Home" />
 
-    <GuestLayout>
+    <GuestLayout :cartCount="$page.props.cartCount">
         <div
             class="max-w-5xl mx-auto p-5 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
         >
             <Link
                 v-for="product in products"
-                :href="`/product/${product.id}`"
+                :href="route('product', product.id)"
                 class="product shadow hover:shadow-md hover:-translate-y-1 transition duration-100 ease-out"
             >
                 <img

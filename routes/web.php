@@ -31,33 +31,45 @@ use App\Http\Controllers\ManageUsersController;
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/product/{product}', [HomeController::class, 'renderProduct'])->name('product');
 
 // Route::get('/product/{id}', function () {
 //     return 'working';
 // });
 
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('/users', [ManageUsersController::class, 'index'])->middleware(['auth', 'verified'])->name('users.index');
-Route::get('/users/paginated', [ManageUsersController::class, 'getPaginated'])->middleware(['auth', 'verified'])->name('users.paginated');
-Route::post('/users/store', [ManageUsersController::class, 'store'])->middleware(['auth', 'verified'])->name('users.store');
-Route::patch('/users/{user}', [ManageUsersController::class, 'update'])->middleware(['auth', 'verified'])->name('users.update');
-Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->middleware(['auth', 'verified'])->name('users.destroy');
-// Products
-Route::get('/products', [ProductController::class, 'index'])->middleware(['auth', 'verified'])->name('products.index');
-Route::get('/products/paginated', [ProductController::class, 'getPaginated'])->middleware(['auth', 'verified'])->name('products.paginated');
-Route::get('/products/create', [ProductController::class, 'create'])->middleware(['auth', 'verified'])->name('products.create');
-Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->middleware(['auth', 'verified'])->name('products.edit');
-Route::patch('/products/{product}', [ProductController::class, 'update'])->middleware(['auth', 'verified'])->name('products.update');
-Route::delete('/products/{product}', [ProductController::class, 'destroy'])->middleware(['auth', 'verified'])->name('products.destroy');
-Route::post('/products/store', [ProductController::class, 'store'])->middleware(['auth', 'verified'])->name('products.store');
-Route::post('/products/image-upload', [ProductController::class, 'imageUpload'])->middleware(['auth', 'verified'])->name('products.imageUpload');
-Route::delete('/products/image/{image}', [ProductController::class, 'imageDelete'])->middleware(['auth', 'verified'])
-    ->where('image', '[\w-]+\.(jpg|jpeg|png)')
-    ->name('products.imageDelete');
+Route::middleware(['auth', 'verified'])->group(function () {
+
+    Route::get('/dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    // User
+    Route::get('/users', [ManageUsersController::class, 'index'])->name('users.index');
+    Route::get('/users/paginated', [ManageUsersController::class, 'getPaginated'])->name('users.paginated');
+    Route::post('/users/store', [ManageUsersController::class, 'store'])->name('users.store');
+    Route::patch('/users/{user}', [ManageUsersController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [ManageUsersController::class, 'destroy'])->name('users.destroy');
+    // Products
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/paginated', [ProductController::class, 'getPaginated'])->name('products.paginated');
+    Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::get('/products/{product}', [HomeController::class, 'renderProduct'])->name('product');
+    Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::patch('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::post('/products/image-upload', [ProductController::class, 'imageUpload'])->name('products.imageUpload');
+    Route::delete('/products/image/{image}', [ProductController::class, 'imageDelete'])
+        ->where('image', '[\w-]+\.(jpg|jpeg|png)')
+        ->name('products.imageDelete');
+    // Cart
+    Route::post('/products/cart/add', [ProductController::class, 'addToCart'])->name('products.addToCart');
+    Route::get('/products/cart/count', [ProductController::class, 'getCartCount'])->name('products.getCartCount');
+});
+
+
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

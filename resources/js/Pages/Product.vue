@@ -1,18 +1,40 @@
 <script setup>
-import { Head, Link } from "@inertiajs/vue3";
+import { Head, Link, router, usePage } from "@inertiajs/vue3";
 import GuestLayout from "@/Layouts/GuestLayout.vue";
 import { onMounted, ref } from "vue";
 import PrimaryButton from "@/Components/PrimaryButton.vue";
 const props = defineProps({
     product: { type: Object, required: true },
+    cartCount: Number
 });
 
+// const { route } = usePage();
 const productQuantity = ref(1);
 
 const selectedImage = ref(null);
 
+const addToCart = () => {
+    router.post(
+        route("products.addToCart"),
+        {
+            product: props.product.id,
+            quantity: productQuantity.value,
+        },
+        {
+            onError: (errors) => {
+                console.log(
+                    "%cerror Product.vue line:25 ",
+                    "color: red; display: block; width: 100%;",
+                    errors
+                );
+            },
+            preserveState: true,
+            preserveScroll: true
+        }
+    );
+};
+
 onMounted(() => {
-    console.log(props);
     if (props.product.default_image) {
         selectedImage.value = props.product.default_image.medium;
     }
@@ -22,7 +44,7 @@ onMounted(() => {
 <template>
     <Head :title="`Merch — ${product.name}`" />
 
-    <GuestLayout>
+    <GuestLayout :cartCount="props.cartCount">
         <div class="product max-w-5xl mx-auto p-5 bg-white my-5">
             <div class="flex">
                 <div class="w-full max-w-sm">
@@ -97,6 +119,7 @@ onMounted(() => {
                                 <button
                                     class="text-xl text-gray-600 w-7 h-7 bg-gray-200 hover:bg-gray-300 hover:text-gray-700 disabled:text-gray-400 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 inline-flex justify-center items-center"
                                     @click="productQuantity++"
+                                    :disabled="productQuantity >= 3"
                                 >
                                     +
                                 </button>
@@ -113,6 +136,7 @@ onMounted(() => {
                             <PrimaryButton
                                 type="button"
                                 class="bg-pink-600 hover:bg-pink-700"
+                                @click.prevent="addToCart"
                                 >Add to cart</PrimaryButton
                             >
                         </div>
