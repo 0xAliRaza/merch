@@ -15,7 +15,7 @@ const selectedImage = ref(null);
 
 const addToCart = () => {
     router.post(
-        route("products.addToCart"),
+        route("carts.addToCart"),
         {
             product: props.product.id,
             quantity: productQuantity.value,

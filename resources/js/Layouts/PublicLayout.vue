@@ -37,7 +37,7 @@ const props = defineProps({ cartCount: Number });
                         v-if="$page?.props?.auth?.user"
                         class="hidden sm:flex sm:items-center sm:ml-6"
                     >
-                        <Link :href="'/'" class="px-3 py-2">
+                        <Link :href="route('carts.index')" class="px-3 py-2">
                             <!-- :active="route().current('dashboard')" -->
                             {{ props.cartCount }}
                             <svg
@@ -190,7 +190,7 @@ const props = defineProps({ cartCount: Number });
                 </div>
             </div>
         </nav>
-        <div class="mx-auto py-12 min-w-lg">
+        <div class="mx-auto py-12">
             <main>
                 <slot />
             </main>

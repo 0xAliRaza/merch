@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ManageUsersController;
+use App\Http\Controllers\CartsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,8 +30,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/products/{product}', [HomeController::class, 'renderProduct'])->name('product');
 
     // Cart
-    Route::post('/products/cart/add', [ProductController::class, 'addToCart'])->name('products.addToCart');
-    Route::get('/products/cart/count', [ProductController::class, 'getCartCount'])->name('products.getCartCount');
+    Route::get('/cart', [CartsController::class, 'index'])->name('carts.index');
+    Route::post('/cart/add', [CartsController::class, 'addToCart'])->name('carts.addToCart');
 });
 
 
