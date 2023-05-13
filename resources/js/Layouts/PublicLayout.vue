@@ -190,11 +190,9 @@ const props = defineProps({ cartCount: Number });
                 </div>
             </div>
         </nav>
-        <div class="mx-auto py-12">
-            <main>
-                <slot />
-            </main>
-        </div>
+        <main>
+            <slot />
+        </main>
     </div>
 </template>
 
