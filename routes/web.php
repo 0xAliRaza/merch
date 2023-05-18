@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Cart
     Route::get('/cart', [CartsController::class, 'index'])->name('carts.index');
     Route::post('/cart/add', [CartsController::class, 'addToCart'])->name('carts.addToCart');
+    Route::patch('/cart/edit', [CartsController::class, 'editCartItem'])->name('carts.edit');
 });
 
 

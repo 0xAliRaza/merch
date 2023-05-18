@@ -6,15 +6,19 @@ import PrimaryButton from "@/Components/PrimaryButton.vue";
 const props = defineProps({
     cartCount: Number,
     carts: Array,
+    total: Number,
 });
 
-const selectedProducts = ref([]);
+const toggleCartItem = (cart) => {
+    router.patch(route("carts.edit"), {
+        product: cart.product_id,
+        selected: !cart.selected,
+    });
+};
 
-const total = computed(() => {
-    return selectedProducts.value.reduce((total, cartItem) => {
-        return total + cartItem.product.discounted_price * cartItem.quantity;
-    }, 0);
-});
+const checkout = () => {
+    // router.post(route());
+};
 </script>
 
 <template>
@@ -30,10 +34,11 @@ const total = computed(() => {
                             <label
                                 :for="`product-check-${cart.product_id}`"
                             ></label>
+
                             <input
                                 type="checkbox"
-                                v-model="selectedProducts"
-                                :value="cart"
+                                @change.prevent="toggleCartItem(cart)"
+                                :checked="cart.selected"
                                 id="`product-check-${cart.product_id}`"
                                 class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                             />
@@ -101,7 +106,9 @@ const total = computed(() => {
                         </span>
                     </h3>
                 </div>
-                <PrimaryButton class="w-full justify-center"
+                <PrimaryButton
+                    class="w-full justify-center"
+                    @click.prevent="checkout"
                     >Proceed To Checkout</PrimaryButton
                 >
             </div>
