@@ -1,0 +1,253 @@
+[33mcommit 3830a86d5012725ebfad42edca34644adf9f7bf7[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu May 18 15:24:59 2023 +0500
+
+    refactor: implement selection of cart items
+
+[33mcommit f634e8e85dd1e60eae95f23d00c7127c6dc1a4ba[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sat May 13 14:36:21 2023 +0500
+
+    feat: add dynamic cart page functionality
+
+[33mcommit 8dcefbedc8d85c7deca5f306b8ea8460886c6a9e[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri May 12 14:24:48 2023 +0500
+
+    wip: cart page
+
+[33mcommit 474eb95427e2c37d8a75b59d5b728732fc8c0196[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Wed May 10 23:34:06 2023 +0500
+
+    refactor: separate admin related code from public
+    
+    To decreate the complexity of code, this commit separates the admin dashboard related code from public code.
+    
+    Below are some the additional changes/tweaks:
+    - Custom php.ini for docker container (to increate memory limitations)
+    - A little refactoring in ProductController for better error handling.
+    - Use of route() instead of hardcoded URIs.
+
+[33mcommit c33a678ba015909f9403a2b63dcaed3bc6dccdb7[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Wed May 10 16:05:17 2023 +0500
+
+    feat: add cart feature to product page
+
+[33mcommit e665a512fe6918c200f6a786ffbe6e98afbea860[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun May 7 02:16:29 2023 +0500
+
+    fix: add necessary deps and php-exts to docker...
+    ... and some other tweaks
+
+[33mcommit df6a8bf848fc30f11a6b503e1ea85919ba09247d[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu Apr 27 13:38:01 2023 +0500
+
+    feat: Add product factory and seeder
+
+[33mcommit 490905538c976dbd68b99bebfa32cda74f21c744[m
+Author: ALi Raza <0xaliraza@gmail.com>
+Date:   Sun Apr 16 02:27:17 2023 +0500
+
+    Feat: Add custom docker compose setup
+    
+    This commit replaces sail with custom docker compose setup.
+    Sail was slow, heavy and kept causing unneeded bugs. Not the mention the
+    hours it took to setup on a new machine.
+
+[33mcommit 6d536e327f4bda0b611fd45245bda7f638ebc5e1[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu Apr 13 00:07:18 2023 +0500
+
+    WIP: Render basic product data
+
+[33mcommit f59d0057edf014af09f2b63274ec1d7e2ea6a351[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Wed Apr 12 14:17:44 2023 +0500
+
+    WIP: Building out product page
+
+[33mcommit fce7be067dd2e92d3717b01b48a97c125709a557[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Tue Apr 11 15:06:51 2023 +0500
+
+    feat: render products at home page
+
+[33mcommit 5fa0a2b0804cd4133500b438e05c241b0e21b572[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu Apr 6 12:19:46 2023 +0500
+
+    feat: Enable sidebar collapsing
+
+[33mcommit b48c118ec66813f6fa7d99e629c974b6484e7e81[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri Mar 10 03:46:16 2023 +0500
+
+    feat: Implement authorization for product deletion
+
+[33mcommit 367163d27c34b296b12a1a1de50a7ea33326956d[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri Mar 10 03:33:23 2023 +0500
+
+    fix: Update default image using index
+    
+    `!empty` was excluding index 0 in if statement.
+    This commit fixes the issue.
+
+[33mcommit cda08341fe960456b2918838b4e5fb471165aa67[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri Mar 10 02:57:10 2023 +0500
+
+    refactor: Remove product image files from storage
+
+[33mcommit bfdec162859d91b3ca2fb41211b43773a3529bf2[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri Mar 10 02:34:16 2023 +0500
+
+    feat: Add ability to edit/update product
+
+[33mcommit aacf6a21bd1750ba08263f31c2570d0a462c261e[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu Mar 9 12:42:09 2023 +0500
+
+    fix: properly remove image while product creation
+
+[33mcommit 1b509dec9d0397c6b008741c5ae88221b6153459[m
+Merge: a831152 7a8471d
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Mar 5 02:44:59 2023 +0500
+
+    Merge pull request #2 from 0xAliRaza/add-license-1
+    
+    Create LICENSE
+
+[33mcommit 7a8471daa9d090f9ff84cbe80eab0e34f81c46c0[m[33m ([m[1;31morigin/add-license-1[m[33m)[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Mar 5 02:44:44 2023 +0500
+
+    Create LICENSE
+
+[33mcommit a831152a58078abd678f24930bc410af28538358[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Mar 5 02:43:06 2023 +0500
+
+    update README
+
+[33mcommit 0a0f781d21fb96f085599bd94b10270084998760[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Mar 5 02:03:45 2023 +0500
+
+    feat: Add action btns and delete product logic
+
+[33mcommit aed7d4f36d3f4b81d2083a17f1bc6e817d512536[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Mar 5 01:14:37 2023 +0500
+
+    feat: List all products
+
+[33mcommit 411c2e99a720b27f9c948d3cf0bc707c6df0474b[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu Mar 2 01:28:23 2023 +0500
+
+    feat: Add pagination and search functionality...
+    ...to users table
+
+[33mcommit dbb1ce4619a42ac6bfc2e9629398c70214a66d44[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Mon Feb 27 00:42:59 2023 +0500
+
+    fix: Fix update user request
+    
+    The inertia form request had `["users"]` in the only option so the
+    errors weren't visible.
+    This commit modifies the update user route and seperates the validation
+    logic into a separate form request.
+    It also fixes some other small issues in the frontend.
+
+[33mcommit f73d694dfa751e791de198d1d59b407e100d6031[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Feb 26 22:58:34 2023 +0500
+
+    fix: Table column sorting arrow color
+
+[33mcommit 65ba29a4373cde1e3ed28930333fc2b7288b0094[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Feb 26 04:32:53 2023 +0500
+
+    feat: Make users table interactive
+
+[33mcommit 345fe2fdb0cd2ab268c2c9a9cbed04f715752492[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Thu Feb 23 00:06:44 2023 +0500
+
+    feat: Make dropzone delete image btn work
+
+[33mcommit 41aeac2bf4fbc5c7567acee01f5d5650ca49cdd3[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Tue Feb 21 23:10:15 2023 +0500
+
+    feat: Authorize product creation
+
+[33mcommit 011de0b443ac2e19b2ed862d69b34d94852f49d6[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Mon Feb 20 22:51:46 2023 +0500
+
+    feat: Store product with...
+    ... optimized (multiple resolution) product images
+
+[33mcommit 1193d06aee429d38fd50155145a50584ad9b49f1[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Mon Feb 20 00:26:14 2023 +0500
+
+    feat: Set default image button in dropzone
+
+[33mcommit 210941fa46b58e72711827dbe90878c9917b9099[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Feb 19 13:16:31 2023 +0500
+
+    fix: Better validation for product image
+
+[33mcommit 811f9640be300fc1cf8487bda24dcfcca5d0c7aa[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sat Feb 18 16:31:20 2023 +0500
+
+    feat: add validation for product creation
+
+[33mcommit f3694e88861a56a6e3b7869fb94e12b50133ab5a[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Mon Feb 13 23:27:38 2023 +0500
+
+    feat: add delete user logic
+
+[33mcommit b20a033060da1bec324336f5bbd7fefb99cf4f9a[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sat Feb 11 12:53:22 2023 +0500
+
+    feat: add update/create user logic
+
+[33mcommit 8d7dde595f8f9e3dedb9ec20a9a147ece97f10c2[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sat Feb 11 00:07:07 2023 +0500
+
+    feat: add a form to create new user
+
+[33mcommit fc445b7cb34868fbe9864bea2b96622ea5b58e74[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri Feb 10 16:57:40 2023 +0500
+
+    feat: exclude customers while indexing users
+
+[33mcommit eccb3506d8a78ec5f44dedde7c8e7ad1f62e3d1e[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Fri Feb 10 15:25:05 2023 +0500
+
+    feat: list all users
+
+[33mcommit 365f8d0cbd8f401eb7732f1bb36e184ea1ba2bc6[m
+Author: Ali Raza <0xaliraza@gmail.com>
+Date:   Sun Feb 5 18:06:55 2023 +0500
+
+    init

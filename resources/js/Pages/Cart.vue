@@ -11,10 +11,14 @@ const props = defineProps({
 
 const toggleCartItem = (cart) => {
     router.patch(route("carts.edit"), {
-        product: cart.product_id,
+        product_id: cart.product_id,
         selected: !cart.selected,
     });
 };
+
+const updateProductQuantity = (cart, newQuantity) {
+    const data = {product_id: cart.product_id, quantity: c }
+}
 
 const checkout = () => {
     // router.post(route());
@@ -81,6 +85,7 @@ const checkout = () => {
                     <div class="product__quantity flex align-center mx-5">
                         <button
                             class="text-xl text-gray-600 w-7 h-7 bg-gray-200 hover:bg-gray-300 hover:text-gray-700 disabled:text-gray-400 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 inline-flex justify-center items-center"
+                            @click.prevent="updateProductQuantity(cart, true)"
                         >
                             -
                         </button>
@@ -91,6 +96,7 @@ const checkout = () => {
                         />
                         <button
                             class="text-xl text-gray-600 w-7 h-7 bg-gray-200 hover:bg-gray-300 hover:text-gray-700 disabled:text-gray-400 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 inline-flex justify-center items-center"
+                            @click.prevent="updateProductQuantity(cart, false)"
                         >
                             +
                         </button>
