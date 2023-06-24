@@ -32,7 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Cart
     Route::get('/cart', [CartsController::class, 'index'])->name('carts.index');
     Route::post('/cart/add', [CartsController::class, 'addToCart'])->name('carts.addToCart');
-    Route::patch('/cart/edit', [CartsController::class, 'editCartItem'])->name('carts.edit');
+    // Note: Route key name is defined as product_id in Cart model for route model binding of cart param
+    Route::patch('/cart/{cart}/edit', [CartsController::class, 'editCartItem'])->name('carts.edit');
+    Route::delete('/cart/{cart}/delete', [CartsController::class, 'deleteCartItem'])->name('carts.delete');
 });
 
 

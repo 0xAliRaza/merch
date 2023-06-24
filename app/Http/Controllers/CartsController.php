@@ -39,17 +39,14 @@ class CartsController extends Controller
         return redirect()->back();
     }
 
-    public function editCartItem(Request $request)
+    public function editCartItem(Request $request, Cart $cart)
     {
         $request->validate([
-            'product_id' => 'required|exists:carts,product_id',
             'selected' => 'required_without:quantity|boolean',
             'quantity' => 'required_without:selected|integer|min:1|max:3',
 
         ]);
 
-
-        $cart = Cart::where(['product_id' => $request->input('product_id'), 'user_id' => $request->user()->id])->firstOrFail();
         if ($request->has('selected')) {
             $cart->selected = $request->input('selected');
         }
@@ -57,6 +54,11 @@ class CartsController extends Controller
             $cart->quantity = $request->input('quantity');
         }
         $cart->save();
+        return redirect()->back();
+    }
+    public function deleteCartItem(Request $request, Cart $cart)
+    {
+        $cart->delete();
         return redirect()->back();
     }
 }

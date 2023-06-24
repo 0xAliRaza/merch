@@ -11,6 +11,11 @@ class Cart extends Model
 
     protected $fillable = ['product_id', 'user_id'];
 
+    public function getRouteKeyName()
+    {
+        return 'product_id';
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

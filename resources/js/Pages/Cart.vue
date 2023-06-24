@@ -10,16 +10,22 @@ const props = defineProps({
 });
 
 const toggleCartItem = (cart) => {
-    router.patch(route("carts.edit"), {
-        product_id: cart.product_id,
-        selected: !cart.selected,
-    });
+    router.patch(
+        route("carts.edit", cart.product_id),
+        { selected: !cart.selected },
+        {
+            onError: (errors) => {
+                console.log(
+                    "%cerror Product.vue line:25 ",
+                    "color: red; display: block; width: 100%;",
+                    errors
+                );
+            },
+        }
+    );
 };
-
-const updateProductQuantity = (cart, newQuantity) => {
-    const data = { product_id: cart.product_id, quantity: newQuantity };
-
-    router.patch(route("carts.edit"), data, {
+const deleteCartItem = (cart) => {
+    router.delete(route("carts.delete", cart.product_id), {
         onError: (errors) => {
             console.log(
                 "%cerror Product.vue line:25 ",
@@ -28,6 +34,22 @@ const updateProductQuantity = (cart, newQuantity) => {
             );
         },
     });
+};
+
+const updateProductQuantity = (cart, newQuantity) => {
+    router.patch(
+        route("carts.edit", cart.product_id),
+        { quantity: newQuantity },
+        {
+            onError: (errors) => {
+                console.log(
+                    "%cerror Product.vue line:25 ",
+                    "color: red; display: block; width: 100%;",
+                    errors
+                );
+            },
+        }
+    );
 };
 
 const checkout = () => {
@@ -115,6 +137,15 @@ const checkout = () => {
                             "
                         >
                             +
+                        </button>
+                    </div>
+                    <div class="flex">
+                        <button
+                            type="button"
+                            class="px-4 py-2 text-xs self-start font-semibold hover:underline text-pink-600 hover:text-pink-700 inline-flex justify-center items-center"
+                            @click.prevent="deleteCartItem(cart)"
+                        >
+                            Delete
                         </button>
                     </div>
                 </div>
