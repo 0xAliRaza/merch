@@ -17,8 +17,18 @@ const toggleCartItem = (cart) => {
 };
 
 const updateProductQuantity = (cart, newQuantity) => {
-    const data = {product_id: cart.product_id, quantity: c }
-}
+    const data = { product_id: cart.product_id, quantity: newQuantity };
+
+    router.patch(route("carts.edit"), data, {
+        onError: (errors) => {
+            console.log(
+                "%cerror Product.vue line:25 ",
+                "color: red; display: block; width: 100%;",
+                errors
+            );
+        },
+    });
+};
 
 const checkout = () => {
     // router.post(route());
@@ -65,7 +75,7 @@ const checkout = () => {
                             </Link>
                         </div>
                     </div>
-                    <div class="product__price px-5 ml-auto">
+                    <div class="product__price px-5 ml-auto whitespace-nowrap">
                         <div class="text-xl text-indigo-600">
                             <span class="">$</span>
                             <span class="">
@@ -85,7 +95,10 @@ const checkout = () => {
                     <div class="product__quantity flex align-center mx-5">
                         <button
                             class="text-xl text-gray-600 w-7 h-7 bg-gray-200 hover:bg-gray-300 hover:text-gray-700 disabled:text-gray-400 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 inline-flex justify-center items-center"
-                            @click.prevent="updateProductQuantity(cart, true)"
+                            :disabled="cart.quantity - 1 < 1"
+                            @click.prevent="
+                                updateProductQuantity(cart, cart.quantity - 1)
+                            "
                         >
                             -
                         </button>
@@ -96,7 +109,10 @@ const checkout = () => {
                         />
                         <button
                             class="text-xl text-gray-600 w-7 h-7 bg-gray-200 hover:bg-gray-300 hover:text-gray-700 disabled:text-gray-400 disabled:bg-gray-100 disabled:hover:bg-gray-100 disabled:hover:text-gray-400 inline-flex justify-center items-center"
-                            @click.prevent="updateProductQuantity(cart, false)"
+                            :disabled="cart.quantity + 1 > 3"
+                            @click.prevent="
+                                updateProductQuantity(cart, cart.quantity + 1)
+                            "
                         >
                             +
                         </button>
