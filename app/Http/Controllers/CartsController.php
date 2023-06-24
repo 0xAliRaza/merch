@@ -37,13 +37,14 @@ class CartsController extends Controller
     public function editCartItem(Request $request)
     {
         $request->validate([
-            'product_id' => 'quantity,selected|exists:carts,product_id',
+            'product_id' => 'required|exists:carts,product_id',
             'selected' => 'boolean',
             'quantity' => 'integer|min:1|max:3',
 
         ]);
 
-        $cart = Cart::where(['product_id' => $request->input('product'), 'user_id' => $request->user()->id])->firstOrFail();
+
+        $cart = Cart::where(['product_id' => $request->input('product_id'), 'user_id' => $request->user()->id])->firstOrFail();
         $cart->selected = $request->input('selected');
         $cart->save();
         return redirect()->back();

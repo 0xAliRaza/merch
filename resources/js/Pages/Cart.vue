@@ -16,7 +16,7 @@ const toggleCartItem = (cart) => {
     });
 };
 
-const updateProductQuantity = (cart, newQuantity) {
+const updateProductQuantity = (cart, newQuantity) => {
     const data = {product_id: cart.product_id, quantity: c }
 }
 

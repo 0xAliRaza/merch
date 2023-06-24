@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Product;
 use App\Models\ProductImage;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -46,10 +46,25 @@ class ProductImageFactory extends Factory
 {
     public function definition()
     {
-        $small = fake()->image(storage_path('app/public/images') . '/small', 480, 480, null, false);
-        $medium = fake()->image(storage_path('app/public/images') . '/medium', 800, 800, null, false);
-        $large = fake()->image(storage_path('app/public/images') . '/large', 1200, 1200, null, false);
-        $original = fake()->image(storage_path('app/public/images'), 1920, 1080, null, false);
+
+        $imagesDirectory = storage_path('app/public/images');
+        $smallDirectory = $imagesDirectory . '/small';
+        $mediumDirectory = $imagesDirectory . '/medium';
+        $largeDirectory = $imagesDirectory . '/large';
+        $originalDirectory = $imagesDirectory;
+
+        // Create directories if they don't exist
+        File::makeDirectory($imagesDirectory, 0755, true, true);
+        File::makeDirectory($smallDirectory, 0755, true, true);
+        File::makeDirectory($mediumDirectory, 0755, true, true);
+        File::makeDirectory($largeDirectory, 0755, true, true);
+        File::makeDirectory($originalDirectory, 0755, true, true);
+
+        $small = fake()->image($smallDirectory, 480, 480, null, false);
+        $medium = fake()->image($mediumDirectory, 800, 800, null, false);
+        $large = fake()->image($largeDirectory, 1200, 1200, null, false);
+        $original = fake()->image($originalDirectory, 1920, 1080, null, false);
+
         return [
             'small' => 'small/' . $small,
             'medium' => 'medium/' . $medium,
