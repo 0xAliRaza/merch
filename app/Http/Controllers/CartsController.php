@@ -26,8 +26,13 @@ class CartsController extends Controller
             'product' => 'required|exists:products,id',
             'quantity' => 'integer|required|min:1|max:3'
         ]);
-        // TODO: Limit the allowable quantity of purchase to 3
         $cart = Cart::firstOrNew(['product_id' => $request->input('product'), 'user_id' => $request->user()->id]);
+        $newQuantity = (int) $cart->quantity + $request->input('quantity');
+        if ($newQuantity > 3) {
+            return back()->withErrors([
+                'quantity' => "We're sorry, but you can only add 3 of this item to your cart at this time."
+            ]);
+        }
         $cart->quantity = (int) $cart->quantity + $request->input('quantity');
         $cart->selected = true;
         $cart->save();
@@ -38,14 +43,19 @@ class CartsController extends Controller
     {
         $request->validate([
             'product_id' => 'required|exists:carts,product_id',
-            'selected' => 'boolean',
-            'quantity' => 'integer|min:1|max:3',
+            'selected' => 'required_without:quantity|boolean',
+            'quantity' => 'required_without:selected|integer|min:1|max:3',
 
         ]);
 
 
         $cart = Cart::where(['product_id' => $request->input('product_id'), 'user_id' => $request->user()->id])->firstOrFail();
-        $cart->selected = $request->input('selected');
+        if ($request->has('selected')) {
+            $cart->selected = $request->input('selected');
+        }
+        if ($request->has('quantity')) {
+            $cart->quantity = $request->input('quantity');
+        }
         $cart->save();
         return redirect()->back();
     }

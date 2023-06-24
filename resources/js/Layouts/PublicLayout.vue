@@ -21,6 +21,11 @@ const props = defineProps({ cartCount: Number });
                 <div class="flex justify-between h-16">
                     <div class="flex">
                         <!-- Navigation Links -->
+                        <header
+                            class="h-16 flex p-4 justify-center items-center font-extrabold text-indigo-600 hover:text-indigo-800"
+                        >
+                            <Link href="/">Merch</Link>
+                        </header>
                         <div
                             class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex"
                         >

@@ -28,7 +28,7 @@ const addToCart = () => {
                     errors
                 );
             },
-            preserveState: true,
+                preserveState: true,
             preserveScroll: true
         }
     );
