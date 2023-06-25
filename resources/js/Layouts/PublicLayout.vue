@@ -18,7 +18,7 @@ const props = defineProps({ cartCount: Number });
         >
             <!-- Primary Navigation Menu -->
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between h-16">
+                <div class="flex h-16">
                     <div class="flex">
                         <!-- Navigation Links -->
                         <header
@@ -30,6 +30,7 @@ const props = defineProps({ cartCount: Number });
                             class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex"
                         >
                             <NavLink
+                                v-if="$page?.props?.auth?.user"
                                 :href="route('dashboard')"
                                 :active="route().current('dashboard')"
                             >
@@ -38,10 +39,7 @@ const props = defineProps({ cartCount: Number });
                         </div>
                     </div>
 
-                    <div
-                        v-if="$page?.props?.auth?.user"
-                        class="hidden sm:flex sm:items-center sm:ml-6"
-                    >
+                    <div class="hidden sm:flex sm:items-center sm:ml-auto">
                         <Link :href="route('carts.index')" class="px-3 py-2">
                             <!-- :active="route().current('dashboard')" -->
                             {{ props.cartCount }}
@@ -62,7 +60,10 @@ const props = defineProps({ cartCount: Number });
                             </svg>
                         </Link>
                         <!-- Settings Dropdown -->
-                        <div class="ml-3 relative">
+                        <div
+                            v-if="$page?.props?.auth?.user"
+                            class="ml-3 relative"
+                        >
                             <Dropdown align="right" width="48">
                                 <template #trigger>
                                     <span class="inline-flex rounded-md">
@@ -102,6 +103,23 @@ const props = defineProps({ cartCount: Number });
                                 </template>
                             </Dropdown>
                         </div>
+                    </div>
+                    <!-- TODO: Stylize login/signup buttons -->
+                    <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
+                        <NavLink
+                            v-if="!$page?.props?.auth?.user"
+                            :href="route('login')"
+                            :active="route().current('login')"
+                        >
+                            Login
+                        </NavLink>
+                        <NavLink
+                            v-if="!$page?.props?.auth?.user"
+                            :href="route('register')"
+                            :active="route().current('register')"
+                        >
+                            Register
+                        </NavLink>
                     </div>
 
                     <!-- Hamburger -->
@@ -157,6 +175,7 @@ const props = defineProps({ cartCount: Number });
             >
                 <div class="pt-2 pb-3 space-y-1">
                     <ResponsiveNavLink
+                        v-if="$page?.props?.auth?.user"
                         :href="route('dashboard')"
                         :active="route().current('dashboard')"
                     >

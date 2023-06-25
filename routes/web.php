@@ -25,9 +25,9 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 
+Route::get('/products/{product}', [HomeController::class, 'renderProduct'])->name('product');
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    Route::get('/products/{product}', [HomeController::class, 'renderProduct'])->name('product');
 
     // Cart
     Route::get('/cart', [CartsController::class, 'index'])->name('carts.index');
