@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\ManageUsersController;
 use App\Http\Controllers\CartsController;
+use App\Http\Controllers\ShipmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -35,6 +36,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Note: Route key name is defined as product_id in Cart model for route model binding of cart param
     Route::patch('/cart/{cart}/edit', [CartsController::class, 'editCartItem'])->name('carts.edit');
     Route::delete('/cart/{cart}/delete', [CartsController::class, 'deleteCartItem'])->name('carts.delete');
+
+    // Shipping
+    Route::get('/shipping/details', [ShipmentController::class, 'showDetailsPage'])->name('shipping.details');
 });
 
 
