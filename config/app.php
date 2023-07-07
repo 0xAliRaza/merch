@@ -186,6 +186,8 @@ return [
          * Package Service Providers...
          */
         Intervention\Image\ImageServiceProvider::class,
+        MichaelDrennen\Geonames\GeonamesServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -212,5 +214,7 @@ return [
         // 'ExampleClass' => App\Example\ExampleClass::class,
         'Image' => Intervention\Image\Facades\Image::class,
     ])->toArray(),
+
+
 
 ];
